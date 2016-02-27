@@ -43,6 +43,14 @@ def agents(ctx):
         click.echo(agent['name'])
 
 
+@click.command(short_help="show dashboards")
+@click.pass_context
+def dashboards(ctx):
+    _dashboards = Dashboards(ctx)
+    for dashboard in _dashboards.get_dashboards():
+        click.echo(dashboard['name'])
+
+
 @click.command(short_help="show plugins")
 @click.pass_context
 def plugins(ctx):
@@ -50,6 +58,21 @@ def plugins(ctx):
     for plugin in _plugins.get_plugins():
         click.echo(plugin['name'])
 
+
+@click.command(short_help="show links")
+@click.pass_context
+def links(ctx):
+    _links = Links(ctx)
+    for link in _links.get_links():
+        click.echo(link['id'])
+
+
+@click.command(short_help="show rules")
+@click.pass_context
+def rules(ctx):
+    _rules = Rules(ctx)
+    for rule in _rules.get_rules():
+        click.echo(rule['name'])
 
 @click.command(short_help="show tags")
 @click.pass_context
@@ -62,5 +85,8 @@ def tags(ctx):
 show.add_command(status)
 show.add_command(accounts)
 show.add_command(agents)
+show.add_command(dashboards)
+show.add_command(links)
 show.add_command(plugins)
+show.add_command(rules)
 show.add_command(tags)
