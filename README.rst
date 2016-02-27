@@ -64,7 +64,7 @@ The first thing to know is that help is never far away. You can use the ``--help
     dlcli COMMAND --help
 
 .. code-block:: none
-    
+
     dlcli COMMAND SUBCOMMAND --help
 
 
