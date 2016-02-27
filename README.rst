@@ -6,17 +6,21 @@
 install dlcli using pip
 
 .. code-block:: none
+
     pip install dlcli
 
 set your org, account and api key
 
 .. code-block:: none
+
     dlcli set org acme-ltd
 
 .. code-block:: none
+
     dlcli set account staging
 
 .. code-block:: none
+
     dlcli set key xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 
 these get stored in ~/dlcli.yaml so the details only need to be changed when you are switching orgs or accounts
@@ -24,11 +28,13 @@ these get stored in ~/dlcli.yaml so the details only need to be changed when you
 now verify you have a successful connection
 
 .. code-block:: none
+
     dlcli show status
 
 then get a list of all of your agents
 
 .. code-block:: none
+
     dlcli show agents
 
 fun! this is a work in progress so if you want to collaborate please raise PR's
@@ -41,6 +47,7 @@ fun! this is a work in progress so if you want to collaborate please raise PR's
 dlcli commands can be thought of as a series of nested commands, with each stage having its own options and flags.
 
 .. code-block:: none
+
     dlcli [FLAGS] COMMAND [FLAGS] SUBCOMMAND [FLAGS]
 
 
@@ -49,12 +56,15 @@ The square braces indicate optional elements. Some commands have flags, some do 
 The first thing to know is that help is never far away. You can use the ``--help`` flag at any stage to discover which flags are available:
 
 .. code-block:: none
+
     dlcli --help
 
 .. code-block:: none
+
     dlcli COMMAND --help
 
 .. code-block:: none
+    
     dlcli COMMAND SUBCOMMAND --help
 
 
