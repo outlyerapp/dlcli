@@ -36,7 +36,6 @@ def rule(ctx, rule):
     print _rules.export_rule(rule)
 
 
-
 pull.add_command(dashboard)
 pull.add_command(plugin)
 pull.add_command(rule)

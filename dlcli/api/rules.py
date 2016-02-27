@@ -1,6 +1,5 @@
 import logging
 import requests
-import yaml
 logger = logging.getLogger(__name__)
 
 
