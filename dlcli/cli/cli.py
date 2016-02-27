@@ -1,4 +1,5 @@
 import sys
+import yaml
 import click
 from .. import __version__
 
@@ -17,15 +18,26 @@ except ImportError:
 DEFAULT_ARGS = {
     'debug': False,
     'log_level': 'INFO',
+    'org': None,
+    'account': None,
+    'key': None
 }
+
+settings_file = "/tmp/.dlcli.yaml"
+try:
+    stream = open(settings_file, 'r')
+    settings = yaml.load(stream)
+    DEFAULT_ARGS.update({k: v for k, v in settings.iteritems() if v})
+except IOError:
+    pass
 
 
 @click.group()
 @click.option('--debug', is_flag=True, help='Debug mode', default=DEFAULT_ARGS['debug'])
-@click.option('--loglevel', help='Log level', default=DEFAULT_ARGS['log_level'])
-@click.option('--org', help='Organization Name', type=str, default=None)
-@click.option('--account', help='Account Name', type=str, default=None)
-@click.option('--key', help='API Key', type=str, default=None)
+@click.option('--loglevel', help='Log level', type=str, default=DEFAULT_ARGS['log_level'])
+@click.option('--org', help='Organization Name', type=str, default=DEFAULT_ARGS['org'])
+@click.option('--account', help='Account Name', type=str, default=DEFAULT_ARGS['account'])
+@click.option('--key', help='API Key', type=str, default=DEFAULT_ARGS['key'])
 @click.version_option(version=__version__)
 @click.pass_context
 def cli(ctx, debug, loglevel, org, account, key):

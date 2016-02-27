@@ -1,0 +1,38 @@
+from ..cli import *
+from ..api import *
+import click
+
+import logging
+logger = logging.getLogger(__name__)
+
+
+@cli.group('set')
+@click.pass_context
+def set(ctx):
+    """sets things"""
+
+
+@click.command(short_help="set organization")
+@click.argument('org')
+@click.pass_context
+def org(ctx, org):
+    save_setting({"org": str(org)})
+
+
+@click.command(short_help="set account")
+@click.argument('account')
+@click.pass_context
+def account(ctx, account):
+    save_setting({"account": str(account)})
+
+
+@click.command(short_help="set key")
+@click.argument('key')
+@click.pass_context
+def key(ctx, key):
+    save_setting({"key": str(key)})
+
+
+set.add_command(org)
+set.add_command(account)
+set.add_command(key)
