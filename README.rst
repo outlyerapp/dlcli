@@ -30,24 +30,24 @@ Understand that using the --help flag in between two nested commands will result
 The top-level help output looks like this:
 
 
-  $ dlcli --help
-  Usage: dlcli [OPTIONS] COMMAND [ARGS]...
+    $ dlcli --help
+    Usage: dlcli [OPTIONS] COMMAND [ARGS]...
 
     Dataloop Command Line Tool
 
     See https://www.dataloop.io
 
 
-  Options:
+    Options:
     --debug            Debug mode
     --loglevel TEXT    Log level
     --logfile TEXT     log file
     --version          Show the version and exit.
     --help             Show this message and exit.
 
-  Commands:
+    Commands:
     agents      Dataloop Agents
 
- 
+
 
 Note that all available flags and commands for this level are shown. This pattern is repeated at each successive level of --help
