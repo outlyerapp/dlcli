@@ -1,5 +1,6 @@
 import logging
 import requests
+import yaml
 logger = logging.getLogger(__name__)
 
 
@@ -13,3 +14,7 @@ class Rules(object):
 
     def get_rules(self):
         return requests.get(self.url + '/orgs/' + self.org + '/accounts/' + self.account + '/rules', headers=self.headers).json()
+
+    def export_rule(self, rule):
+        self.headers.update({"Accept": "application/yaml"})
+        return requests.get(self.url + '/orgs/' + self.org + '/accounts/' + self.account + '/rules/56d0709e1b36dd8ef76e38fd', headers=self.headers).content

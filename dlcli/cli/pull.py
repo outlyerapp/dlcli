@@ -27,5 +27,16 @@ def plugin(ctx, plugin):
     _plugins = Plugins(ctx)
     print _plugins.export_plugin(plugin)
 
+
+@click.command(short_help="Pull a rule")
+@click.argument('rule')
+@click.pass_context
+def rule(ctx, rule):
+    _rules = Rules(ctx)
+    print _rules.export_rule(rule)
+
+
+
 pull.add_command(dashboard)
 pull.add_command(plugin)
+pull.add_command(rule)
