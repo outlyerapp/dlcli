@@ -6,6 +6,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+
 @cli.group('show')
 @click.pass_context
 def show(ctx):
@@ -15,8 +16,9 @@ def show(ctx):
 @click.command(short_help="show agents")
 @click.pass_context
 def agents(ctx):
-   print 'agents!'
-
+    _agents = Agents(ctx)
+    for agent in _agents.get_agents():
+        click.echo(agent['name'])
 
 @click.command(short_help="show status")
 @click.pass_context
