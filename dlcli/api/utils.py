@@ -4,8 +4,8 @@ import yaml
 logger = logging.getLogger(__name__)
 
 
-def save_setting(setting):
-    settings_file = "/tmp/.dlcli.yaml"
+def save_setting(ctx, setting):
+    settings_file = ctx.parent.parent.params['settingsfile']
     try:
         stream = open(settings_file, 'r')
         data = yaml.load(stream)

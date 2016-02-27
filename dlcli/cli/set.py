@@ -23,21 +23,21 @@ def url(ctx, url):
 @click.argument('org')
 @click.pass_context
 def org(ctx, org):
-    save_setting({"org": str(org)})
+    save_setting(ctx, {"org": str(org)})
 
 
 @click.command(short_help="set account")
 @click.argument('account')
 @click.pass_context
 def account(ctx, account):
-    save_setting({"account": str(account)})
+    save_setting(ctx, {"account": str(account)})
 
 
 @click.command(short_help="set key")
 @click.argument('key')
 @click.pass_context
 def key(ctx, key):
-    save_setting({"key": str(key)})
+    save_setting(ctx, {"key": str(key)})
 
 set.add_command(url)
 set.add_command(org)

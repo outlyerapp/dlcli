@@ -30,7 +30,7 @@ def status(ctx):
     if resp.status_code == 200:
         click.echo('Authenticated: ' + click.style('True', fg='green'))
     else:
-        click.echo('Authenticated: ' + click.style('False', fg='red'))
+        click.echo('Authenticated: ' + click.style('False', fg='red') + ', Status Code: ' + click.style(str(resp.status_code), fg='red'))
 
 
 show.add_command(status)
