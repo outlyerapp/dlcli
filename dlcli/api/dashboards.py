@@ -1,5 +1,6 @@
 import logging
 import requests
+import yaml
 logger = logging.getLogger(__name__)
 
 
@@ -13,3 +14,7 @@ class Dashboards(object):
 
     def get_dashboards(self):
         return requests.get(self.url + '/orgs/' + self.org + '/accounts/' + self.account + '/dashboards', headers=self.headers).json()
+
+    def export_dashboard(self, dashboard):
+        resp = requests.get(self.url + '/orgs/' + self.org + '/accounts/' + self.account + '/dashboards/' + dashboard, headers=self.headers).json()
+        return yaml.safe_dump(resp, default_flow_style=False)

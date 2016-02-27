@@ -13,4 +13,4 @@ def save_setting(ctx, setting):
         data = {}
     data.update({k: v for k, v in setting.iteritems() if v})
     with open(settings_file, 'w') as yaml_file:
-        yaml_file.write(yaml.dump(data, default_flow_style=False))
+        yaml_file.write(yaml.safe_dump(data, default_flow_style=False))

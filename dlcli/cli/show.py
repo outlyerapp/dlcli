@@ -27,7 +27,7 @@ def status(ctx):
         click.echo('Authenticated: ' + click.style('False', fg='red') + ', Status Code: ' + click.style(str(resp.status_code), fg='red'))
 
 
-@click.command(short_help="show accounts")
+@click.command(short_help="Show accounts")
 @click.pass_context
 def accounts(ctx):
     _accounts = Accounts(ctx)
@@ -35,7 +35,7 @@ def accounts(ctx):
         click.echo(account['name'])
 
 
-@click.command(short_help="show agents")
+@click.command(short_help="Show agents")
 @click.pass_context
 def agents(ctx):
     _agents = Agents(ctx)
@@ -43,7 +43,7 @@ def agents(ctx):
         click.echo(agent['name'])
 
 
-@click.command(short_help="show dashboards")
+@click.command(short_help="Show dashboards")
 @click.pass_context
 def dashboards(ctx):
     _dashboards = Dashboards(ctx)
@@ -51,7 +51,7 @@ def dashboards(ctx):
         click.echo(dashboard['name'])
 
 
-@click.command(short_help="show plugins")
+@click.command(short_help="Show plugins")
 @click.pass_context
 def plugins(ctx):
     _plugins = Plugins(ctx)
@@ -59,7 +59,7 @@ def plugins(ctx):
         click.echo(plugin['name'])
 
 
-@click.command(short_help="show links")
+@click.command(short_help="Show links")
 @click.pass_context
 def links(ctx):
     _links = Links(ctx)
@@ -67,14 +67,14 @@ def links(ctx):
         click.echo(link['id'])
 
 
-@click.command(short_help="show rules")
+@click.command(short_help="Show rules")
 @click.pass_context
 def rules(ctx):
     _rules = Rules(ctx)
     for rule in _rules.get_rules():
         click.echo(rule['name'])
 
-@click.command(short_help="show tags")
+@click.command(short_help="Show tags")
 @click.pass_context
 def tags(ctx):
     _tags = Tags(ctx)

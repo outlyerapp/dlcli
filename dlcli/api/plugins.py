@@ -1,5 +1,6 @@
 import logging
 import requests
+import base64
 logger = logging.getLogger(__name__)
 
 
@@ -13,3 +14,7 @@ class Plugins(object):
 
     def get_plugins(self):
         return requests.get(self.url + '/orgs/' + self.org + '/accounts/' + self.account + '/plugins', headers=self.headers).json()
+
+    def export_plugin(self, plugin):
+        resp = requests.get(self.url + '/orgs/' + self.org + '/accounts/' + self.account + '/plugins/' + plugin, headers=self.headers).json()
+        return base64.b64decode(resp['content'])
