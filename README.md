@@ -11,11 +11,11 @@ The square braces indicate optional elements. Some commands have flags, some do 
 The first thing to know is that help is never far away. You can use the --help flag at any stage to discover which flags are available:
 
 ```
-curator --help
+dlcli --help
 
-curator COMMAND --help
+dlcli COMMAND --help
 
-curator COMMAND SUBCOMMAND --help
+dlcli COMMAND SUBCOMMAND --help
 ```
 
 Understand that using the --help flag in between two nested commands will result in the previous level --help output being shown.
