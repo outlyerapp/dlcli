@@ -1,19 +1,40 @@
 """
 Command line utility for Dataloop.IO
 """
+
+import os
+import re
 from setuptools import find_packages, setup
+
+
+def fread(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
+
+def get_version():
+    VERSIONFILE="dlcli/_version.py"
+    verstrline = fread(VERSIONFILE).strip()
+    vsre = r"^__version__ = ['\"]([^'\"]*)['\"]"
+    mo = re.search(vsre, verstrline, re.M)
+    if mo:
+        VERSION = mo.group(1)
+    else:
+        raise RuntimeError("Unable to find version string in %s." % (VERSIONFILE,))
+    return VERSION
 
 dependencies = ['click']
 
 setup(
     name='dlcli',
-    version='0.0.2',
+    version=get_version(),
     url='https://github.com/sacreman/dlcli',
-    license='BSD',
+    download_url="https://github.com/dataloop/dlcli/tarball/v" + get_version(),
+    license="Apache License, Version 2.0",
     author='Steven Acreman',
     author_email='steven.acreman@dataloop.io',
     description='Command line utility for Dataloop.IO',
-    long_description=__doc__,
+    long_description=fread('README.rst'),
+    keywords="dataloop monitoring",
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
     zip_safe=False,
@@ -25,24 +46,8 @@ setup(
         ],
     },
     classifiers=[
-        # As from http://pypi.python.org/pypi?%3Aaction=list_classifiers
-        # 'Development Status :: 1 - Planning',
-        # 'Development Status :: 2 - Pre-Alpha',
-        # 'Development Status :: 3 - Alpha',
-        'Development Status :: 4 - Beta',
-        # 'Development Status :: 5 - Production/Stable',
-        # 'Development Status :: 6 - Mature',
-        # 'Development Status :: 7 - Inactive',
-        'Environment :: Console',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
-        'Operating System :: POSIX',
-        'Operating System :: MacOS',
-        'Operating System :: Unix',
-        # 'Operating System :: Windows',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 3',
-        'Topic :: Software Development :: Libraries :: Python Modules',
+        "Intended Audience :: Developers",
+        "Intended Audience :: System Administrators",
+        "License :: OSI Approved :: Apache Software License",
     ]
 )
