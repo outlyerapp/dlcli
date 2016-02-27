@@ -1,0 +1,17 @@
+.*.swp
+*~
+*.py[co]
+build
+dist
+scratch
+docs/_build
+*.egg
+.eggs
+.coverage
+.idea
+dlcli.egg-info/
+coverage.xml
+nosetests.xml
+index.html
+docs/asciidoc/html_docs
+wheelhouse
