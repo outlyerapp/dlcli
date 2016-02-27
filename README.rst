@@ -29,7 +29,7 @@ Understand that using the --help flag in between two nested commands will result
 
 The top-level help output looks like this:
 
-
+.. code-block:: none
     $ dlcli --help
     Usage: dlcli [OPTIONS] COMMAND [ARGS]...
 
