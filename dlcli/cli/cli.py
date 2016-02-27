@@ -19,13 +19,16 @@ DEFAULT_ARGS = {
     'log_level': 'INFO',
 }
 
+
 @click.group()
 @click.option('--debug', is_flag=True, help='Debug mode', default=DEFAULT_ARGS['debug'])
 @click.option('--loglevel', help='Log level', default=DEFAULT_ARGS['log_level'])
-@click.option('--logfile', help='log file')
+@click.option('--org', help='Organization Name', type=str, default=None)
+@click.option('--account', help='Account Name', type=str, default=None)
+@click.option('--key', help='API Key', type=str, default=None)
 @click.version_option(version=__version__)
 @click.pass_context
-def cli(ctx, debug, loglevel, logfile):
+def cli(ctx, debug, loglevel, org, account, key):
     if debug:
         numeric_log_level = logging.DEBUG or loglevel.upper() == 'DEBUG'
         format_string = '%(asctime)s %(levelname)-9s %(name)22s %(funcName)22s:%(lineno)-4d %(message)s'
@@ -35,10 +38,9 @@ def cli(ctx, debug, loglevel, logfile):
         if not isinstance(numeric_log_level, int):
             raise ValueError('Invalid log level: {0}'.format(loglevel))
 
-    handler = logging.StreamHandler(
-        open(logfile, 'a') if logfile else sys.stdout)
+    handler = logging.StreamHandler(sys.stdout)
 
     handler.setFormatter(logging.Formatter(format_string))
     logging.root.addHandler(handler)
     logging.root.setLevel(numeric_log_level)
-    logger = logging.getLogger('curator.cli')
+    logger = logging.getLogger('dlcli.cli')
