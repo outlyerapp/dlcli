@@ -1,5 +1,32 @@
 .. _readme:
 
+`Quick Example`_
+----------------------------
+
+install dlcli using pip
+
+``pip install dlcli``
+
+set your org, account and api key
+
+``dlcli set org acme-ltd``
+``dlcli set account staging``
+``dlcli set key xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx``
+
+these get stored in ~/dlcli.yaml so the details only need to be changed when you are switching orgs or accounts
+
+now verify you have a successful connection
+
+``dlcli show status``
+
+then get a list of all of your agents
+
+``dlcli show agents``
+
+fun! this is a work in progress so if you want to collaborate please raise PR's
+
+
+
 `Dataloop CLI Tool`_
 ----------------------------
 
