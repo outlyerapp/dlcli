@@ -12,6 +12,13 @@ def set(ctx):
     """sets things"""
 
 
+@click.command(short_help="set url")
+@click.argument('url')
+@click.pass_context
+def url(ctx, url):
+    save_setting({"url": str(url)})
+
+
 @click.command(short_help="set organization")
 @click.argument('org')
 @click.pass_context
@@ -32,7 +39,7 @@ def account(ctx, account):
 def key(ctx, key):
     save_setting({"key": str(key)})
 
-
+set.add_command(url)
 set.add_command(org)
 set.add_command(account)
 set.add_command(key)

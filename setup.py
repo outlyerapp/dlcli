@@ -22,7 +22,7 @@ def get_version():
         raise RuntimeError("Unable to find version string in %s." % (VERSIONFILE,))
     return VERSION
 
-dependencies = ['click']
+dependencies = ['click', 'requests']
 
 setup(
     name='dlcli',

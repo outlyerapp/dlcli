@@ -18,6 +18,7 @@ except ImportError:
 DEFAULT_ARGS = {
     'debug': False,
     'log_level': 'INFO',
+    'url': 'https://api.dataloop.io/v1',
     'org': None,
     'account': None,
     'key': None
@@ -35,12 +36,13 @@ except IOError:
 @click.group()
 @click.option('--debug', is_flag=True, help='Debug mode', default=DEFAULT_ARGS['debug'])
 @click.option('--loglevel', help='Log level', type=str, default=DEFAULT_ARGS['log_level'])
+@click.option('--url', help='API URL', type=str, default=DEFAULT_ARGS['url'])
 @click.option('--org', help='Organization Name', type=str, default=DEFAULT_ARGS['org'])
 @click.option('--account', help='Account Name', type=str, default=DEFAULT_ARGS['account'])
 @click.option('--key', help='API Key', type=str, default=DEFAULT_ARGS['key'])
 @click.version_option(version=__version__)
 @click.pass_context
-def cli(ctx, debug, loglevel, org, account, key):
+def cli(ctx, debug, loglevel, url, org, account, key):
     if debug:
         numeric_log_level = logging.DEBUG or loglevel.upper() == 'DEBUG'
         format_string = '%(asctime)s %(levelname)-9s %(name)22s %(funcName)22s:%(lineno)-4d %(message)s'
@@ -56,3 +58,4 @@ def cli(ctx, debug, loglevel, org, account, key):
     logging.root.addHandler(handler)
     logging.root.setLevel(numeric_log_level)
     logger = logging.getLogger('dlcli.cli')
+    logging.getLogger("requests").setLevel(logging.WARNING)
