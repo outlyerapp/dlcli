@@ -1,3 +1,4 @@
+import os
 import logging
 import yaml
 
@@ -25,3 +26,11 @@ def build_api_url(ctx, endpoint='', orglevel=False, accountlevel=False):
     if accountlevel:
         return url + '/orgs/' + org + '/accounts'
     return url + '/orgs/' + org + '/accounts/' + account + '/' + endpoint
+
+
+def create_dir(path, directory):
+    new_directory = os.path.join(path, directory)
+    if not os.path.exists(new_directory):
+        os.makedirs(new_directory)
+    return new_directory
+
