@@ -15,7 +15,7 @@ class Rules(object):
 
     def export_rule(self, rule):
         self.headers.update({"Accept": "application/yaml"})
-        return requests.get(build_api_url(self.ctx, 'rules') + '/rules/56d0709e1b36dd8ef76e38fd', headers=self.headers).content
+        return requests.get(build_api_url(self.ctx, 'rules') + '/' + rule, headers=self.headers).content
 
     def delete_rule(self, rule):
         return requests.delete(build_api_url(self.ctx, 'rules') + '/' + rule, headers=self.headers)
