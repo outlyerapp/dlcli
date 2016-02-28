@@ -15,20 +15,13 @@ def backup(ctx):
     """performs backups"""
 
 
-@click.command(short_help="Backup an Organization")
-@click.argument('org')
-@click.pass_context
-def org(ctx, org):
-    _orgs = Orgs(ctx)
-
-
 @click.command(short_help="Backup an Account")
 @click.argument('account')
 @click.pass_context
 def account(ctx, account):
     #  create directory structure
+    ctx.parent.parent.params['account'] = account
     org = ctx.parent.parent.params['org']
-    account = ctx.parent.parent.params['account']
     backupdir = ctx.parent.parent.params['backupdir']
 
     backup_dir = create_dir(os.getcwd(), backupdir)
@@ -72,5 +65,14 @@ def account(ctx, account):
         with open(tag_path, 'w') as f:
             f.write(json.dumps(t, indent=4))
 
-backup.add_command(org)
+
+@click.command(short_help="Backup an Organization")
+@click.argument('org')
+@click.pass_context
+def org(ctx, org):
+    ctx.parent.parent.params['org'] = org
+    for a in Accounts(ctx).get_accounts():
+        ctx.invoke(account, account=a['name'])
+
 backup.add_command(account)
+backup.add_command(org)
