@@ -67,6 +67,14 @@ def links(ctx):
         click.echo(link['id'])
 
 
+@click.command(short_help="Show orgs")
+@click.pass_context
+def orgs(ctx):
+    _orgs = Orgs(ctx)
+    for org in _orgs.get_orgs():
+        click.echo(org['name'])
+
+
 @click.command(short_help="Show rules")
 @click.pass_context
 def rules(ctx):
@@ -87,6 +95,7 @@ show.add_command(accounts)
 show.add_command(agents)
 show.add_command(dashboards)
 show.add_command(links)
+show.add_command(orgs)
 show.add_command(plugins)
 show.add_command(rules)
 show.add_command(tags)
