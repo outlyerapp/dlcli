@@ -16,8 +16,7 @@ def rm(ctx):
 @click.pass_context
 def account(ctx, account):
     click.confirm('Once you delete an account, there is no going back. Are you sure?', abort=True)
-    _accounts = Accounts(ctx)
-    resp = _accounts.delete_account(account)
+    resp = Accounts(ctx).delete_account(account)
     if resp.status_code == 204:
         click.echo('Deleted account ' + account)
     else:
@@ -28,8 +27,7 @@ def account(ctx, account):
 @click.argument('agent')
 @click.pass_context
 def agent(ctx, agent):
-    _agents = Agents(ctx)
-    resp = _agents.delete_agent(agent)
+    resp = Agents(ctx).delete_agent(agent)
     if resp.status_code == 204:
         click.echo('Deleted agent ' + agent)
     else:
@@ -41,8 +39,7 @@ def agent(ctx, agent):
 @click.argument('dashboard')
 @click.pass_context
 def dashboard(ctx, dashboard):
-    _dashboards = Dashboards(ctx)
-    resp = _dashboards.delete_dashboard(dashboard)
+    resp = Dashboards(ctx).delete_dashboard(dashboard)
     if resp.status_code == 204:
         click.echo('Deleted dashboard ' + dashboard)
     else:
@@ -53,8 +50,7 @@ def dashboard(ctx, dashboard):
 @click.argument('link')
 @click.pass_context
 def link(ctx, link):
-    _links = Links(ctx)
-    resp = _links.delete_link(link)
+    resp = Links(ctx).delete_link(link)
     if resp.status_code == 204:
         click.echo('Deleted link ' + link)
     else:
@@ -66,8 +62,7 @@ def link(ctx, link):
 @click.pass_context
 def org(ctx, org):
     click.confirm('Once you delete an organization, there is no going back. Are you sure?', abort=True)
-    _orgs = Orgs(ctx)
-    resp = _orgs.delete_org(org)
+    resp = Orgs(ctx).delete_org(org)
     if resp.status_code == 204:
         click.echo('Deleted org ' + org)
     else:
@@ -78,8 +73,7 @@ def org(ctx, org):
 @click.argument('plugin')
 @click.pass_context
 def plugin(ctx, plugin):
-    _plugins = Plugins(ctx)
-    resp = _plugins.delete_plugin(plugin)
+    resp = Plugins(ctx).delete_plugin(plugin)
     if resp.status_code == 204:
         click.echo('Deleted plugin ' + plugin)
     else:
@@ -90,8 +84,7 @@ def plugin(ctx, plugin):
 @click.argument('rule')
 @click.pass_context
 def rule(ctx, rule):
-    _rules = Rules(ctx)
-    resp = _rules.delete_rule(rule)
+    resp = Rules(ctx).delete_rule(rule)
     if resp.status_code == 204:
         click.echo('Deleted rule ' + rule)
     else:
@@ -102,8 +95,7 @@ def rule(ctx, rule):
 @click.argument('tag')
 @click.pass_context
 def tag(ctx, tag):
-    _tags = Tags(ctx)
-    resp = _tags.delete_tag(tag)
+    resp = Tags(ctx).delete_tag(tag)
     if resp.status_code == 204:
         click.echo('Deleted tag ' + tag)
     else:

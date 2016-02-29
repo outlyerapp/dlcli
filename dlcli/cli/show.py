@@ -29,63 +29,55 @@ def status(ctx):
 @click.command(short_help="Show accounts")
 @click.pass_context
 def accounts(ctx):
-    _accounts = Accounts(ctx)
-    for account in _accounts.get_accounts():
+    for account in Accounts(ctx).get_accounts():
         click.echo(account['name'])
 
 
 @click.command(short_help="Show agents")
 @click.pass_context
 def agents(ctx):
-    _agents = Agents(ctx)
-    for agent in _agents.get_agents():
+    for agent in Agents(ctx).get_agents():
         click.echo(agent['name'])
 
 
 @click.command(short_help="Show dashboards")
 @click.pass_context
 def dashboards(ctx):
-    _dashboards = Dashboards(ctx)
-    for dashboard in _dashboards.get_dashboards():
+    for dashboard in Dashboards(ctx).get_dashboards():
         click.echo(dashboard['name'])
 
 
 @click.command(short_help="Show plugins")
 @click.pass_context
 def plugins(ctx):
-    _plugins = Plugins(ctx)
-    for plugin in _plugins.get_plugins():
+    for plugin in Plugins(ctx).get_plugins():
         click.echo(plugin['name'])
 
 
 @click.command(short_help="Show links")
 @click.pass_context
 def links(ctx):
-    _links = Links(ctx)
-    for link in _links.get_links():
+    for link in Links(ctx).get_links():
         click.echo(link['id'])
 
 
 @click.command(short_help="Show orgs")
 @click.pass_context
 def orgs(ctx):
-    _orgs = Orgs(ctx)
-    for org in _orgs.get_orgs():
+    for org in Orgs(ctx).get_orgs():
         click.echo(org['name'])
 
 
 @click.command(short_help="Show rules")
 @click.pass_context
 def rules(ctx):
-    _rules = Rules(ctx)
-    for rule in _rules.get_rules():
+    for rule in Rules(ctx).get_rules():
         click.echo(rule['name'])
 
 @click.command(short_help="Show tags")
 @click.pass_context
 def tags(ctx):
-    _tags = Tags(ctx)
-    for tag in _tags.get_tags():
+    for tag in Tags(ctx).get_tags():
         click.echo(tag['name'])
 
 

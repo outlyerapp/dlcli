@@ -140,9 +140,7 @@ def restore_account(ctx, account):
     # restore dashboards
     dashboard_files = glob.glob(dashboards_dir + '/*.yaml')
     for dashboard_path in dashboard_files:
-        dashboard_name = os.path.splitext(os.path.basename(dashboard_path))[0]
-        dashboard_yaml = read_file_content(dashboard_path)
-        dashboards.Dashboards(ctx).import_dashboard(dashboard_name, dashboard_yaml)
+        dashboards.Dashboards(ctx).import_dashboard(dashboard_path)
 
 
 def restore_org(ctx, org):
