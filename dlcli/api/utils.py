@@ -115,7 +115,7 @@ def restore_account(ctx, account):
                 payload = {
                             "mac": agent_json['mac'],
                             "hostname": agent_json['hostname'],
-                            "tags": agent_json['tags'],
+                            "tag_names": ",".join(agent_json['tags']),
                             "os_name": agent_json['osName'],
                             "container_name": agent_json['container_name'],
                             "mode": agent_json['mode'],
