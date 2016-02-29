@@ -12,19 +12,20 @@ def restore(ctx):
     """restores backups"""
 
 
-@click.command(short_help="Restore an Organization")
-@click.argument('org')
-@click.pass_context
-def org(ctx, org):
-    _orgs = Orgs(ctx)
-
-
 @click.command(short_help="Restore an Account")
 @click.argument('account')
 @click.pass_context
 def account(ctx, account):
-    _accounts = Accounts(ctx)
+    utils.restore_account(ctx, account)
 
 
-restore.add_command(org)
+@click.command(short_help="Restore an Organization")
+@click.argument('org')
+@click.pass_context
+def org(ctx, org):
+    utils.restore_org(ctx, org)
+
+
 restore.add_command(account)
+restore.add_command(org)
+

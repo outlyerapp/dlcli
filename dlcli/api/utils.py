@@ -1,4 +1,6 @@
 import os
+import sys
+import glob
 import logging
 import yaml
 import json
@@ -44,9 +46,9 @@ def create_dir(path, directory):
 
 def backup_account(ctx, account):
     #  create directory structure
-    ctx.parent.parent.params['account'] = account
-    org = ctx.parent.parent.params['org']
     backupdir = ctx.parent.parent.params['backupdir']
+    org = ctx.parent.parent.params['org']
+    ctx.parent.parent.params['account'] = account
 
     backup_dir = create_dir(os.getcwd(), backupdir)
     org_dir = create_dir(backup_dir, org)
@@ -95,3 +97,37 @@ def backup_org(ctx, org):
     _accounts =accounts.Accounts(ctx)
     for a in _accounts.get_accounts():
         backup_account(ctx, a['name'])
+
+
+def restore_account(ctx, account):
+
+    # restore agents
+    backup_dir = ctx.parent.parent.params['backupdir']
+    org_dir = ctx.parent.parent.params['org']
+    account_dir = ctx.parent.parent.params['account']
+
+    agents_dir = os.path.join(backup_dir, org_dir, account_dir, 'agents')
+    agent_files = glob.glob(agents_dir + '/*.json')
+    for agent_name in agent_files:
+        try:
+            with open(agent_name) as f:
+                agent_json = json.loads(f.read())
+                payload = {
+                            "mac": agent_json['mac'],
+                            "hostname": agent_json['hostname'],
+                            "tags": agent_json['tags'],
+                            "os_name": agent_json['osName'],
+                            "container_name": agent_json['container_name'],
+                            "mode": agent_json['mode'],
+                            "status": agent_json['status'],
+                            "name": agent_json['name'],
+                            "fingerprint": agent_json['id']
+                }
+                agents.Agents(ctx).register_agent(payload)
+        except IOError as exc:
+            if exc.errno != os.errno.EISDIR:
+                raise
+
+
+def restore_org(ctx, org):
+    pass
