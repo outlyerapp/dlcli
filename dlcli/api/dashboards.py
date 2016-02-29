@@ -13,12 +13,13 @@ class Dashboards(object):
     def get_dashboards(self):
         return requests.get(utils.build_api_url(self.ctx, 'dashboards'), headers=self.headers).json()
 
-    def export_dashboard(self, dashboard):
+    def export_dashboard(self, dashboard_name):
         self.headers.update({"Accept": "application/yaml"})
-        return requests.get(utils.build_api_url(self.ctx, 'dashboards') + '/' + dashboard, headers=self.headers).content
+        return requests.get(utils.build_api_url(self.ctx, 'dashboards') + '/' + dashboard_name, headers=self.headers).content
 
-    def import_dashboard(self, dashboard):
-        pass
+    def import_dashboard(self, dashboard_name, dashboard_yaml):
+        self.headers.update({"Content-Type": "application/yaml"})
+        return requests.put(utils.build_api_url(self.ctx, 'dashboards') + '/' + dashboard_name, headers=self.headers, data=dashboard_yaml)
 
-    def delete_dashboard(self, dashboard):
-        return requests.delete(utils.build_api_url(self.ctx, 'dashboards') + '/' + dashboard, headers=self.headers)
+    def delete_dashboard(self, dashboard_name):
+        return requests.delete(utils.build_api_url(self.ctx, 'dashboards') + '/' + dashboard_name, headers=self.headers)

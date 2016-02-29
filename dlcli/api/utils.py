@@ -99,34 +99,50 @@ def backup_org(ctx, org):
         backup_account(ctx, a['name'])
 
 
-def restore_account(ctx, account):
+def read_file_content(file_path):
+    try:
+        with open(file_path) as f:
+            return f.read()
+    except IOError as exc:
+        if exc.errno != os.errno.EISDIR:
+            raise
 
-    # restore agents
+
+def restore_account(ctx, account):
+    ctx.parent.parent.params['account'] = account
     backup_dir = ctx.parent.parent.params['backupdir']
     org_dir = ctx.parent.parent.params['org']
     account_dir = ctx.parent.parent.params['account']
 
     agents_dir = os.path.join(backup_dir, org_dir, account_dir, 'agents')
+    dashboards_dir = os.path.join(backup_dir, org_dir, account_dir, 'dashboards')
+    plugins_dir = os.path.join(backup_dir, org_dir, account_dir, 'plugins')
+    rules_dir = os.path.join(backup_dir, org_dir, account_dir, 'rules')
+    tags_dir = os.path.join(backup_dir, org_dir, account_dir, 'tags')
+
+    # restore agents
     agent_files = glob.glob(agents_dir + '/*.json')
     for agent_name in agent_files:
-        try:
-            with open(agent_name) as f:
-                agent_json = json.loads(f.read())
-                payload = {
-                            "mac": agent_json['mac'],
-                            "hostname": agent_json['hostname'],
-                            "tag_names": ",".join(agent_json['tags']),
-                            "os_name": agent_json['osName'],
-                            "container_name": agent_json['container_name'],
-                            "mode": agent_json['mode'],
-                            "status": agent_json['status'],
-                            "name": agent_json['name'],
-                            "fingerprint": agent_json['id']
-                }
-                agents.Agents(ctx).register_agent(payload)
-        except IOError as exc:
-            if exc.errno != os.errno.EISDIR:
-                raise
+        agent_json = json.loads(read_file_content(agent_name))
+        payload = {
+            "fingerprint": agent_json['id'],
+            "name": agent_json['name'],
+            "hostname": agent_json['hostname'],
+            "tag_names": ",".join(agent_json['tags']),
+            "mac": agent_json['mac'],
+            "os_name": agent_json['osName'],
+            "container_name": agent_json['container_name'],
+            "mode": agent_json['mode'],
+            "status": agent_json['status']
+        }
+        agents.Agents(ctx).register_agent(payload)
+
+    # restore dashboards
+    dashboard_files = glob.glob(dashboards_dir + '/*.yaml')
+    for dashboard_path in dashboard_files:
+        dashboard_name = os.path.splitext(os.path.basename(dashboard_path))[0]
+        dashboard_yaml = read_file_content(dashboard_path)
+        dashboards.Dashboards(ctx).import_dashboard(dashboard_name, dashboard_yaml)
 
 
 def restore_org(ctx, org):
