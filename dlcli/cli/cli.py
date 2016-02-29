@@ -37,7 +37,7 @@ DEFAULT_ARGS = {
 @click.option('--url', help='API URL', type=str, default=DEFAULT_ARGS['url'])
 @click.option('--org', help='Organization Name', type=str, default=DEFAULT_ARGS['org'])
 @click.option('--account', help='Account Name', type=str, default=DEFAULT_ARGS['account'])
-@click.option('--key', help='API Key', type=str, default=DEFAULT_ARGS['key'])
+@click.option('--key', help='API Key', type=click.UUID, default=DEFAULT_ARGS['key'])
 @click.version_option(version=__version__)
 @click.pass_context
 def cli(ctx, debug, loglevel, settingsfile, backupdir, url, org, account, key):

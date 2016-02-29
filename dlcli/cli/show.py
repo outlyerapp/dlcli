@@ -1,10 +1,9 @@
 from ..cli import *
 import click
 import requests
-
 import logging
-logger = logging.getLogger(__name__)
 
+logger = logging.getLogger(__name__)
 
 
 @cli.group('show')

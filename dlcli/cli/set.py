@@ -1,8 +1,8 @@
 from ..cli import *
 from ..api import *
 import click
-
 import logging
+
 logger = logging.getLogger(__name__)
 
 
