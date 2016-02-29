@@ -23,7 +23,7 @@ def save_setting(ctx, setting):
         data = {}
     data.update({k: v for k, v in setting.iteritems() if v})
     with open(settings_file, 'w') as yaml_file:
-        yaml_file.write(yaml.safe_dump(data, default_flow_style=False))
+        yaml_file.write(yaml.safe_dump(data, default_flow_style=False, explicit_start=True))
 
 
 def build_api_url(ctx, endpoint='', orglevel=False, accountlevel=False):
@@ -66,7 +66,7 @@ def backup_account(ctx, account):
     for d in dashboards.Dashboards(ctx).get_dashboards():
         dashboard_path = os.path.join(dashboard_dir, str(d['name']) + '.yaml')
         with open(dashboard_path, 'w') as f:
-            f.write(yaml.safe_dump(d, default_flow_style=False))
+            f.write(yaml.safe_dump(d, default_flow_style=False, explicit_start=True))
 
     # backup plugins
     plugins_dir = create_dir(account_dir, 'plugins')
