@@ -18,9 +18,9 @@ class Dashboards(object):
         self.headers.update({"Accept": "application/yaml"})
         return requests.get(utils.build_api_url(self.ctx, 'dashboards') + '/' + dashboard_name, headers=self.headers).content
 
-    def import_dashboard(self, file_name):
-        dashboard_name = os.path.splitext(os.path.basename(file_name))[0]
-        dashboard_yaml = utils.read_file_content(file_name)
+    def import_dashboard(self, file_path):
+        dashboard_name = os.path.splitext(os.path.basename(file_path))[0]
+        dashboard_yaml = utils.read_file_content(file_path)
         self.headers.update({"Content-Type": "application/yaml"})
         return requests.put(utils.build_api_url(self.ctx, 'dashboards') + '/' + dashboard_name, headers=self.headers, data=dashboard_yaml)
 

@@ -1,5 +1,4 @@
 import os
-import sys
 import glob
 import logging
 import yaml
@@ -141,6 +140,11 @@ def restore_account(ctx, account):
     dashboard_files = glob.glob(dashboards_dir + '/*.yaml')
     for dashboard_path in dashboard_files:
         dashboards.Dashboards(ctx).import_dashboard(dashboard_path)
+
+    # restore plugins
+    plugin_files = glob.glob(plugins_dir + '/*')
+    for plugin_path in plugin_files:
+        plugins.Plugins(ctx).import_plugin(plugin_path)
 
 
 def restore_org(ctx, org):
