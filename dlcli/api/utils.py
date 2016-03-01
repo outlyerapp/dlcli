@@ -55,10 +55,14 @@ def backup_account(ctx, account):
 
     # backup agents
     agent_dir = create_dir(account_dir, 'agents')
-    for a in agents.Agents(ctx).get_agents():
-        agent_path = os.path.join(agent_dir, str(a['name']) + '.json')
+    for agent_json in agents.Agents(ctx).get_agents():
+        agent_path = os.path.join(agent_dir, str(agent_json['name']) + '.json')
+        remove_keys = ['presence_state', 'created', 'modified', 'heartbeat']
+        for key in remove_keys:
+            if key in agent_json:
+                del agent_json[key]
         with open(agent_path, 'w') as f:
-            f.write(json.dumps(a, indent=4))
+            f.write(json.dumps(agent_json, indent=4))
 
     # backup dashboards
     dashboard_dir = create_dir(account_dir, 'dashboards')
