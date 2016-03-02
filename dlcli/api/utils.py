@@ -8,7 +8,6 @@ import agents
 import plugins
 import dashboards
 import rules
-import tags
 import links
 
 logger = logging.getLogger(__name__)
@@ -88,13 +87,6 @@ def backup_account(ctx, account):
         with open(rule_path, 'w') as f:
             f.write(_rules.export_rule(r['id']))
 
-    # backup tags
-    tag_dir = create_dir(account_dir, 'tags')
-    for t in tags.Tags(ctx).get_tags():
-        tag_path = os.path.join(tag_dir, str(t['name']) + '.json')
-        with open(tag_path, 'w') as f:
-            f.write(json.dumps(t, indent=4))
-
     # backup links
     link_dir = create_dir(account_dir, 'links')
     for l in links.Links(ctx).get_links():
@@ -130,7 +122,6 @@ def restore_account(ctx, account):
     dashboards_dir = os.path.join(backup_dir, org_dir, account_dir, 'dashboards')
     plugins_dir = os.path.join(backup_dir, org_dir, account_dir, 'plugins')
     rules_dir = os.path.join(backup_dir, org_dir, account_dir, 'rules')
-    tags_dir = os.path.join(backup_dir, org_dir, account_dir, 'tags')
     links_dir = os.path.join(backup_dir, org_dir, account_dir, 'links')
 
     # restore agents
