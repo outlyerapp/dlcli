@@ -9,6 +9,7 @@ import plugins
 import dashboards
 import rules
 import tags
+import links
 
 logger = logging.getLogger(__name__)
 
@@ -72,10 +73,10 @@ def backup_account(ctx, account):
             f.write(yaml.safe_dump(d, default_flow_style=False, explicit_start=True))
 
     # backup plugins
-    plugins_dir = create_dir(account_dir, 'plugins')
+    plugin_dir = create_dir(account_dir, 'plugins')
     _plugins = plugins.Plugins(ctx)
     for p in _plugins.get_plugins():
-        plugin_path = os.path.join(plugins_dir, str(p['name']) + '.' + str(p['extension']))
+        plugin_path = os.path.join(plugin_dir, str(p['name']) + '.' + str(p['extension']))
         with open(plugin_path, 'w') as f:
             f.write(_plugins.export_plugin(p['name']))
 
@@ -88,16 +89,24 @@ def backup_account(ctx, account):
             f.write(_rules.export_rule(r['id']))
 
     # backup tags
-    tags_dir = create_dir(account_dir, 'tags')
+    tag_dir = create_dir(account_dir, 'tags')
     for t in tags.Tags(ctx).get_tags():
-        tag_path = os.path.join(tags_dir, str(t['name']) + '.json')
+        tag_path = os.path.join(tag_dir, str(t['name']) + '.json')
         with open(tag_path, 'w') as f:
             f.write(json.dumps(t, indent=4))
+
+    # backup links
+    link_dir = create_dir(account_dir, 'links')
+    for l in links.Links(ctx).get_links():
+        link_path = os.path.join(link_dir, l['id'] + '.json')
+        link_json = links.Links(ctx).export_link(l['id'])
+        with open(link_path, 'w') as f:
+            f.write(json.dumps(link_json, indent=4))
 
 
 def backup_org(ctx, org):
     ctx.parent.parent.params['org'] = org
-    _accounts =accounts.Accounts(ctx)
+    _accounts = accounts.Accounts(ctx)
     for a in _accounts.get_accounts():
         backup_account(ctx, a['name'])
 
@@ -122,6 +131,7 @@ def restore_account(ctx, account):
     plugins_dir = os.path.join(backup_dir, org_dir, account_dir, 'plugins')
     rules_dir = os.path.join(backup_dir, org_dir, account_dir, 'rules')
     tags_dir = os.path.join(backup_dir, org_dir, account_dir, 'tags')
+    links_dir = os.path.join(backup_dir, org_dir, account_dir, 'links')
 
     # restore agents
     agent_files = glob.glob(agents_dir + '/*.json')
@@ -155,6 +165,14 @@ def restore_account(ctx, account):
     for rule_path in rule_files:
         rules.Rules(ctx).import_rule(rule_path)
 
+    # restore links
+    link_files = glob.glob(links_dir + '/*.json')
+    for link_path in link_files:
+        links.Links(ctx).import_link(link_path)
+
 
 def restore_org(ctx, org):
-    pass
+    ctx.parent.parent.params['org'] = org
+    _accounts = accounts.Accounts(ctx)
+    for a in _accounts.get_accounts():
+        restore_account(ctx, a['name'])
