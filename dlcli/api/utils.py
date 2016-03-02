@@ -85,7 +85,12 @@ def backup_account(ctx, account):
     for r in _rules.get_rules():
         rule_path = os.path.join(rule_dir, str(r['name']) + '.yaml')
         with open(rule_path, 'w') as f:
-            f.write(_rules.export_rule(r['id']))
+            rule_yaml = yaml.safe_load(_rules.export_rule(r['id']))
+            remove_keys = ['timestamp']
+            for key in remove_keys:
+                if key in rule_yaml:
+                    del rule_yaml[key]
+            f.write(yaml.safe_dump(rule_yaml, default_flow_style=False, explicit_start=True))
 
     # backup links
     link_dir = create_dir(account_dir, 'links')
