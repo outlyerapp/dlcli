@@ -16,7 +16,7 @@ def set(ctx):
 @click.argument('url')
 @click.pass_context
 def url(ctx, url):
-    save_setting({"url": str(url)})
+    save_setting(ctx, {"url": str(url)})
 
 
 @click.command(short_help="Set organization")
