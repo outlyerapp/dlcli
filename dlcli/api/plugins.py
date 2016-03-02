@@ -34,6 +34,5 @@ class Plugins(object):
             resp = requests.patch(utils.build_api_url(self.ctx, 'plugins' + '/' + plugin_name), headers=self.headers, data=payload)
         return resp
 
-    def delete_plugin(self, plugin_path):
-        plugin_name, plugin_extension = os.path.splitext(plugin_path)
-        return requests.delete(utils.build_api_url(self.ctx, 'plugins' + '/' + plugin_name), headers=self.headers)
+    def delete_plugin(self, plugin):
+        return requests.delete(utils.build_api_url(self.ctx, 'plugins' + '/' + plugin), headers=self.headers)

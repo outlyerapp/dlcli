@@ -125,8 +125,8 @@ def restore_account(ctx, account):
 
     # restore agents
     agent_files = glob.glob(agents_dir + '/*.json')
-    for agent_name in agent_files:
-        agent_json = json.loads(read_file_content(agent_name))
+    for agent_path in agent_files:
+        agent_json = json.loads(read_file_content(agent_path))
         payload = {
             "fingerprint": agent_json['id'],
             "name": agent_json['name'],
@@ -149,6 +149,11 @@ def restore_account(ctx, account):
     plugin_files = glob.glob(plugins_dir + '/*')
     for plugin_path in plugin_files:
         plugins.Plugins(ctx).import_plugin(plugin_path)
+
+    # restore rules
+    rule_files = glob.glob(rules_dir + '/*.yaml')
+    for rule_path in rule_files:
+        rules.Rules(ctx).import_rule(rule_path)
 
 
 def restore_org(ctx, org):
