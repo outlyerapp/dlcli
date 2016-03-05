@@ -9,8 +9,29 @@ import plugins
 import dashboards
 import rules
 import links
+from terminaltables import SingleTable
+from termcolor import colored
 
 logger = logging.getLogger(__name__)
+
+def print_run_table(table_data):
+    table = SingleTable(table_data)
+    table.justify_columns = {0: 'left', 1: 'center', 2: 'left'}
+    table.inner_heading_row_border = False
+    table.inner_column_border = False
+    table.outer_border = False
+    max_width = table.column_max_width(2)
+    for index, row in enumerate(table_data):
+        table.table_data[index][2] = str(row[2][0:max_width])
+        if row[1] == 0:
+            table.table_data[index][1] = colored(str(row[1]), 'green')
+        elif row[1] == 1:
+            table.table_data[index][2] = colored(str(row[1]), 'yellow')
+        elif row[1] == 3:
+            table.table_data[index][2] = colored(str(row[1]), 'grey')
+        else:
+            table.table_data[index][2] = colored(str(row[1]), 'red')
+    print table.table
 
 
 def save_setting(ctx, setting):
@@ -73,11 +94,10 @@ def backup_account(ctx, account):
 
     # backup plugins
     plugin_dir = create_dir(account_dir, 'plugins')
-    _plugins = plugins.Plugins(ctx)
-    for p in _plugins.get_plugins():
+    for p in plugins.Plugins(ctx).get_plugins():
         plugin_path = os.path.join(plugin_dir, str(p['name']) + '.' + str(p['extension']))
         with open(plugin_path, 'w') as f:
-            f.write(_plugins.export_plugin(p['name']))
+            f.write(plugins.Plugins(ctx).export_plugin(p['name']))
 
     # backup rules
     rule_dir = create_dir(account_dir, 'rules')

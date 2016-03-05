@@ -4,5 +4,6 @@ from .pull import *
 from .push import *
 from .restore import *
 from .rm import *
+from .run import *
 from .set import *
 from .show import *
