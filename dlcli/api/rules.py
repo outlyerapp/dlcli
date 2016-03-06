@@ -16,6 +16,11 @@ class Rules(object):
             utils.build_api_url(self.ctx, 'rules'),
             headers=self.headers).json()
 
+    def get_criteria(self, rule):
+        return requests.get(
+            utils.build_api_url(self.ctx, 'rules' + '/' + rule + '/criteria'),
+            headers=self.headers).json()
+
     def export_rule(self, rule):
         self.headers.update({"Accept": "application/yaml"})
         return requests.get(

@@ -25,3 +25,11 @@ class Agents(object):
         return requests.delete(
             utils.build_api_url(self.ctx, 'agents') + '/' + agent,
             headers=self.headers)
+
+    def get_agent_name_from_id(self, id):
+        agents = requests.get(
+            utils.build_api_url(self.ctx, 'agents'),
+            headers=self.headers).json()
+        for a in agents:
+            if a['id'] == id:
+                return a['name']
