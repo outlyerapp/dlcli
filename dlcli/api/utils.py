@@ -17,7 +17,10 @@ logger = logging.getLogger(__name__)
 
 def print_command_output(command_data):
     for row in command_data:
-        print '\n' + colored(str(row[0]), 'green') + '\n'
+        if row[1] == 0:
+            print colored(str(row[0]), 'green')
+        else:
+            print colored(str(row[0]), 'red')
         print row[2]
 
 
