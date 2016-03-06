@@ -1,39 +1,24 @@
 from ..cli import *
 import click
-import requests
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-@cli.group('show')
+@cli.group('get')
 @click.pass_context
-def show(ctx):
-    """shows things"""
+def get(ctx):
+    """gets things"""
 
 
-@click.command(short_help="show status")
-@click.pass_context
-def status(ctx):
-    click.echo('URL: %s' % ctx.parent.parent.params['url'])
-    click.echo('Organization: %s' % ctx.parent.parent.params['org'])
-    click.echo('Account: %s' % ctx.parent.parent.params['account'])
-    click.echo('Key: %s' % ctx.parent.parent.params['key'])
-    resp = requests.get(str(ctx.parent.parent.params['url']) + '/orgs/' + str(ctx.parent.parent.params['org']), headers={"Token": ctx.parent.parent.params['key']})
-    if resp.status_code == 200:
-        click.echo('Authenticated: ' + click.style('True', fg='green'))
-    else:
-        click.echo('Authenticated: ' + click.style('False', fg='red') + ', Status Code: ' + click.style(str(resp.status_code), fg='red'))
-
-
-@click.command(short_help="Show accounts")
+@click.command(short_help="Get accounts")
 @click.pass_context
 def accounts(ctx):
     for account in Accounts(ctx).get_accounts():
         click.echo(account['name'])
 
 
-@click.command(short_help="Show agents")
+@click.command(short_help="Get agents")
 @click.pass_context
 def agents(ctx):
     for agent in Agents(ctx).get_agents():
@@ -43,35 +28,35 @@ def agents(ctx):
             click.echo(click.style(agent['name'], fg='red'))
 
 
-@click.command(short_help="Show dashboards")
+@click.command(short_help="Get dashboards")
 @click.pass_context
 def dashboards(ctx):
     for dashboard in Dashboards(ctx).get_dashboards():
         click.echo(dashboard['name'])
 
 
-@click.command(short_help="Show plugins")
+@click.command(short_help="Get plugins")
 @click.pass_context
 def plugins(ctx):
     for plugin in Plugins(ctx).get_plugins():
         click.echo(plugin['name'])
 
 
-@click.command(short_help="Show links")
+@click.command(short_help="Get links")
 @click.pass_context
 def links(ctx):
     for link in Links(ctx).get_links():
         click.echo(link['id'])
 
 
-@click.command(short_help="Show orgs")
+@click.command(short_help="Get orgs")
 @click.pass_context
 def orgs(ctx):
     for org in Orgs(ctx).get_orgs():
         click.echo(org['name'])
 
 
-@click.command(short_help="Show rules")
+@click.command(short_help="Get rules")
 @click.pass_context
 def rules(ctx):
     _rules = Rules(ctx)
@@ -107,7 +92,7 @@ def rules(ctx):
                     message))
 
 
-@click.command(short_help="Show alerts")
+@click.command(short_help="Get alerts")
 @click.pass_context
 def alerts(ctx):
     _rules = Rules(ctx)
@@ -138,20 +123,19 @@ def alerts(ctx):
                     ','.join(map(str, agent_names))))
 
 
-@click.command(short_help="Show tags")
+@click.command(short_help="Get tags")
 @click.pass_context
 def tags(ctx):
     for tag in Tags(ctx).get_tags():
         click.echo(tag['name'])
 
 
-show.add_command(status)
-show.add_command(accounts)
-show.add_command(agents)
-show.add_command(dashboards)
-show.add_command(links)
-show.add_command(orgs)
-show.add_command(plugins)
-show.add_command(rules)
-show.add_command(alerts)
-show.add_command(tags)
+get.add_command(accounts)
+get.add_command(agents)
+get.add_command(dashboards)
+get.add_command(links)
+get.add_command(orgs)
+get.add_command(plugins)
+get.add_command(rules)
+get.add_command(alerts)
+get.add_command(tags)

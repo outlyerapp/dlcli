@@ -6,4 +6,4 @@ from .restore import *
 from .rm import *
 from .run import *
 from .set import *
-from .show import *
+from .get import *

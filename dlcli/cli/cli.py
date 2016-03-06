@@ -1,7 +1,6 @@
-import os
 import sys
-import yaml
 import click
+from ..api import *
 from .. import __version__
 
 import logging
@@ -85,3 +84,26 @@ def cli(ctx, debug, loglevel, settingsfile, backupdir, url, org, account, key):
         ctx.params.update({k: v for k, v in settings.iteritems() if v})
     except IOError:
         pass
+
+@click.command(short_help="status")
+@click.pass_context
+def status(ctx):
+    url = ctx.parent.params['url']
+    org = ctx.parent.params['org']
+    account = ctx.parent.params['account']
+    key = ctx.parent.params['key']
+
+    click.echo('URL: %s' % url)
+    click.echo('Organization: %s' % org)
+    click.echo('Account: %s' % account)
+    click.echo('Key: %s' % key)
+
+    resp = requests.get(url + '/orgs/' + org, headers={'Token': key}).status_code
+    if resp == 200:
+        click.echo('Authenticated: %s' % click.style('True', fg='green'))
+    else:
+        click.echo('Authenticated: %s, Status Code: %s' % (
+            click.style('False', fg='red'),
+            click.style(str(resp), fg='red')))
+
+cli.add_command(status)
