@@ -44,7 +44,10 @@ def accounts(ctx):
 @click.pass_context
 def agents(ctx):
     for agent in Agents(ctx).get_agents():
-        click.echo(agent['name'])
+        if agent['presence_state'] == 'online':
+            click.echo(click.style(agent['name'], fg='green'))
+        else:
+            click.echo(click.style(agent['name'], fg='red'))
 
 
 @click.command(short_help="Show dashboards")
@@ -79,7 +82,10 @@ def orgs(ctx):
 @click.pass_context
 def rules(ctx):
     for rule in Rules(ctx).get_rules():
-        click.echo(rule['name'])
+        if rule['state'] == 'clear':
+            click.echo(click.style(rule['name'], fg='green'))
+        else:
+            click.echo(click.style(rule['name'], fg='red'))
 
 
 @click.command(short_help="Show tags")
