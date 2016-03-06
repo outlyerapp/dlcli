@@ -74,16 +74,6 @@ def orgs(ctx):
 @click.command(short_help="Show rules")
 @click.pass_context
 def rules(ctx):
-    for rule in Rules(ctx).get_rules():
-        if rule['state'] == 'clear':
-            click.echo(click.style(rule['name'], fg='green'))
-        else:
-            click.echo(click.style(rule['name'], fg='red'))
-
-
-@click.command(short_help="Show criterias")
-@click.pass_context
-def criterias(ctx):
     _rules = Rules(ctx)
     for rule in _rules.get_rules():
         for criteria in _rules.get_criteria(rule['name']):
@@ -117,6 +107,37 @@ def criterias(ctx):
                     message))
 
 
+@click.command(short_help="Show alerts")
+@click.pass_context
+def alerts(ctx):
+    _rules = Rules(ctx)
+    for rule in _rules.get_rules():
+        for criteria in _rules.get_criteria(rule['name']):
+            if criteria['condition']['threshold']:
+                message = "on %s %s %s %d for %d seconds" % (
+                    criteria['scopes'][0]['type'],
+                    criteria['scopes'][0]['name'],
+                    criteria['condition']['operator'],
+                    criteria['condition']['threshold'],
+                    criteria['condition']['timeout'])
+            else:
+                message = 'on %s %s for %d seconds' % (
+                    criteria['scopes'][0]['type'],
+                    criteria['scopes'][0]['name'],
+                    criteria['condition']['timeout'])
+
+            if criteria['state'] == 'hit':
+                agent_names = []
+                triggered_by = criteria['triggered_by']
+                for agent_id in triggered_by:
+                    agent_names.append(Agents(ctx).get_agent_name_from_id(agent_id))
+                click.echo(click.style('%s %s %s triggered by %s', fg='red') % (
+                    rule['name'],
+                    criteria['metric'],
+                    message,
+                    ','.join(map(str, agent_names))))
+
+
 @click.command(short_help="Show tags")
 @click.pass_context
 def tags(ctx):
@@ -132,5 +153,5 @@ show.add_command(links)
 show.add_command(orgs)
 show.add_command(plugins)
 show.add_command(rules)
-show.add_command(criterias)
+show.add_command(alerts)
 show.add_command(tags)
