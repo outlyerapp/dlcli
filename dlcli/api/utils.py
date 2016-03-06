@@ -14,6 +14,13 @@ from termcolor import colored
 
 logger = logging.getLogger(__name__)
 
+
+def print_command_output(command_data):
+    for row in command_data:
+        print '\n' + colored(str(row[0]), 'green') + '\n'
+        print row[2]
+
+
 def print_run_table(table_data):
     table = SingleTable(table_data)
     table.justify_columns = {0: 'left', 1: 'center', 2: 'left'}
@@ -22,7 +29,7 @@ def print_run_table(table_data):
     table.outer_border = False
     max_width = table.column_max_width(2)
     for index, row in enumerate(table_data):
-        table.table_data[index][2] = str(row[2][0:max_width])
+        table.table_data[index][2] = str(row[2][0:max_width].splitlines()[0])
         if row[1] == 0:
             table.table_data[index][1] = colored(str(row[1]), 'green')
         elif row[1] == 1:
@@ -43,7 +50,9 @@ def save_setting(ctx, setting):
         data = {}
     data.update({k: v for k, v in setting.iteritems() if v})
     with open(settings_file, 'w') as yaml_file:
-        yaml_file.write(yaml.safe_dump(data, default_flow_style=False, explicit_start=True))
+        yaml_file.write(yaml.safe_dump(data,
+                                       default_flow_style=False,
+                                       explicit_start=True))
 
 
 def build_api_url(ctx, endpoint='', orglevel=False, accountlevel=False):
@@ -90,12 +99,15 @@ def backup_account(ctx, account):
     for d in dashboards.Dashboards(ctx).get_dashboards():
         dashboard_path = os.path.join(dashboard_dir, str(d['name']) + '.yaml')
         with open(dashboard_path, 'w') as f:
-            f.write(yaml.safe_dump(d, default_flow_style=False, explicit_start=True))
+            f.write(yaml.safe_dump(d,
+                                   default_flow_style=False,
+                                   explicit_start=True))
 
     # backup plugins
     plugin_dir = create_dir(account_dir, 'plugins')
     for p in plugins.Plugins(ctx).get_plugins():
-        plugin_path = os.path.join(plugin_dir, str(p['name']) + '.' + str(p['extension']))
+        plugin_path = os.path.join(plugin_dir,
+                                   str(p['name']) + '.' + str(p['extension']))
         with open(plugin_path, 'w') as f:
             f.write(plugins.Plugins(ctx).export_plugin(p['name']))
 
@@ -104,7 +116,8 @@ def backup_account(ctx, account):
     for r in rules.Rules(ctx).get_rules():
         rule_path = os.path.join(rule_dir, str(r['name']) + '.yaml')
         with open(rule_path, 'w') as f:
-            rule_content = yaml.safe_load(rules.Rules(ctx).export_rule(r['id']))
+            rule_content = yaml.safe_load(rules.Rules(ctx).export_rule(r[
+                'id']))
             if rule_content['actions']:
                 action_count = len(rule_content['actions'])
                 for i in range(action_count):
@@ -112,7 +125,9 @@ def backup_account(ctx, account):
                         del rule_content['actions'][i]['details']['status']
                     except KeyError:
                         continue
-            f.write(yaml.safe_dump(rule_content, default_flow_style=False, explicit_start=True))
+            f.write(yaml.safe_dump(rule_content,
+                                   default_flow_style=False,
+                                   explicit_start=True))
 
     # backup links
     link_dir = create_dir(account_dir, 'links')
@@ -146,7 +161,8 @@ def restore_account(ctx, account):
     account_dir = ctx.parent.parent.params['account']
 
     agents_dir = os.path.join(backup_dir, org_dir, account_dir, 'agents')
-    dashboards_dir = os.path.join(backup_dir, org_dir, account_dir, 'dashboards')
+    dashboards_dir = os.path.join(backup_dir, org_dir, account_dir,
+                                  'dashboards')
     plugins_dir = os.path.join(backup_dir, org_dir, account_dir, 'plugins')
     rules_dir = os.path.join(backup_dir, org_dir, account_dir, 'rules')
     links_dir = os.path.join(backup_dir, org_dir, account_dir, 'links')

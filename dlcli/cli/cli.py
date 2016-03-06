@@ -20,7 +20,8 @@ except ImportError:
 DEFAULT_ARGS = {
     'debug': False,
     'log_level': 'INFO',
-    'settingsfile': os.path.join(os.path.expanduser("~"), "dlcli.yaml"),
+    'settingsfile': os.path.join(
+        os.path.expanduser("~"), "dlcli.yaml"),
     'backupdir': 'dlbackups',
     'url': 'https://app.dataloop.io/api/v1',
     'org': None,
@@ -30,14 +31,35 @@ DEFAULT_ARGS = {
 
 
 @click.group()
-@click.option('--debug', is_flag=True, help='Debug mode', default=DEFAULT_ARGS['debug'])
-@click.option('--loglevel', help='Log level', type=str, default=DEFAULT_ARGS['log_level'])
-@click.option('--settingsfile', help='Settings File', type=str, default=DEFAULT_ARGS['settingsfile'])
-@click.option('--backupdir', help='Backups Directory', type=str, default=DEFAULT_ARGS['backupdir'])
+@click.option('--debug',
+              is_flag=True,
+              help='Debug mode',
+              default=DEFAULT_ARGS['debug'])
+@click.option('--loglevel',
+              help='Log level',
+              type=str,
+              default=DEFAULT_ARGS['log_level'])
+@click.option('--settingsfile',
+              help='Settings File',
+              type=str,
+              default=DEFAULT_ARGS['settingsfile'])
+@click.option('--backupdir',
+              help='Backups Directory',
+              type=str,
+              default=DEFAULT_ARGS['backupdir'])
 @click.option('--url', help='API URL', type=str, default=DEFAULT_ARGS['url'])
-@click.option('--org', help='Organization Name', type=str, default=DEFAULT_ARGS['org'])
-@click.option('--account', help='Account Name', type=str, default=DEFAULT_ARGS['account'])
-@click.option('--key', help='API Key', type=click.UUID, default=DEFAULT_ARGS['key'])
+@click.option('--org',
+              help='Organization Name',
+              type=str,
+              default=DEFAULT_ARGS['org'])
+@click.option('--account',
+              help='Account Name',
+              type=str,
+              default=DEFAULT_ARGS['account'])
+@click.option('--key',
+              help='API Key',
+              type=click.UUID,
+              default=DEFAULT_ARGS['key'])
 @click.version_option(version=__version__)
 @click.pass_context
 def cli(ctx, debug, loglevel, settingsfile, backupdir, url, org, account, key):

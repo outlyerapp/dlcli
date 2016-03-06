@@ -39,6 +39,7 @@ def account(ctx, account):
 def key(ctx, key):
     save_setting(ctx, {"key": str(key)})
 
+
 set.add_command(url)
 set.add_command(org)
 set.add_command(account)

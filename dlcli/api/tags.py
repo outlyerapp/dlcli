@@ -11,7 +11,11 @@ class Tags(object):
         self.headers = {"Token": ctx.parent.parent.params['key']}
 
     def get_tags(self):
-        return requests.get(utils.build_api_url(self.ctx, 'tags'), headers=self.headers).json()
+        return requests.get(
+            utils.build_api_url(self.ctx, 'tags'),
+            headers=self.headers).json()
 
     def delete_tag(self, tag):
-        return requests.delete(utils.build_api_url(self.ctx, 'tags') + '/' + tag, headers=self.headers)
+        return requests.delete(
+            utils.build_api_url(self.ctx, 'tags') + '/' + tag,
+            headers=self.headers)

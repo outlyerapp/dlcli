@@ -11,10 +11,13 @@ class Accounts(object):
         self.headers = {"Token": ctx.parent.parent.params['key']}
 
     def get_accounts(self):
-        return requests.get(utils.build_api_url(self.ctx, accountlevel=True), headers=self.headers).json()
+        return requests.get(
+            utils.build_api_url(self.ctx,
+                                accountlevel=True),
+            headers=self.headers).json()
 
     def delete_account(self, account):
-        return requests.delete(utils.build_api_url(self.ctx, accountlevel=True) + '/' + account, headers=self.headers)
-
-
-
+        return requests.delete(
+            utils.build_api_url(self.ctx,
+                                accountlevel=True) + '/' + account,
+            headers=self.headers)

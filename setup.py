@@ -12,17 +12,20 @@ def fread(fname):
 
 
 def get_version():
-    VERSIONFILE="dlcli/_version.py"
+    VERSIONFILE = "dlcli/_version.py"
     verstrline = fread(VERSIONFILE).strip()
     vsre = r"^__version__ = ['\"]([^'\"]*)['\"]"
     mo = re.search(vsre, verstrline, re.M)
     if mo:
         VERSION = mo.group(1)
     else:
-        raise RuntimeError("Unable to find version string in %s." % (VERSIONFILE,))
+        raise RuntimeError("Unable to find version string in %s." %
+                           (VERSIONFILE, ))
     return VERSION
 
-dependencies = ['click', 'requests', 'pyyaml', 'terminaltables', 'termcolor', 'grequests']
+
+dependencies = ['click', 'requests', 'pyyaml', 'terminaltables', 'termcolor',
+                'grequests']
 
 setup(
     name='dlcli',
@@ -49,5 +52,4 @@ setup(
         "Intended Audience :: Developers",
         "Intended Audience :: System Administrators",
         "License :: OSI Approved :: Apache Software License",
-    ]
-)
+    ])
