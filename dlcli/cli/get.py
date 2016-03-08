@@ -161,23 +161,25 @@ def series(ctx, metric, agent, tag, resolution, period):
     if not agent and not tag:
         click.echo('Specify an agent or tag to get the metrics')
         sys.exit(1)
-    points = []
+
     if agent:
         name_map = {}
-
         agent_details = Agents(ctx).get_agents()
         for a in agent_details:
             if a['name'] == agent:
                 name_map[a['id']] = a['name']
         for series in Series(ctx).get_agent_series(a['id'], metric, resolution, period):
+            points = []
             for point in series['points']:
                 points.append(point['avg'])
             print ','.join(map(str, points))
     if tag:
         for series in Series(ctx).get_tag_series(tag, metric, resolution, period):
+            points = []
             for point in series['points']:
                 points.append(point['avg'])
             print ','.join(map(str, points))
+
 
 
 get.add_command(accounts)
