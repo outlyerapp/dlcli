@@ -11,3 +11,4 @@ from .rules import *
 from .shells import *
 from .tags import *
 from .users import *
+from .metrics import *
