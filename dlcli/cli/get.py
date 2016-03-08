@@ -167,8 +167,8 @@ def series(ctx, metric, agent, tag, resolution, period):
         agent_details = Agents(ctx).get_agents()
         for a in agent_details:
             if a['name'] == agent:
-                name_map[a['id']] = a['name']
-        for series in Series(ctx).get_agent_series(a['id'], metric, resolution, period):
+                name_map[a['name']] = a['id']
+        for series in Series(ctx).get_agent_series(name_map[agent], metric, resolution, period):
             points = []
             for point in series['points']:
                 points.append(point['avg'])
@@ -180,7 +180,6 @@ def series(ctx, metric, agent, tag, resolution, period):
             for point in series['points']:
                 points.append(point['avg'])
             print ','.join(map(str, points))
-
 
 
 get.add_command(accounts)
