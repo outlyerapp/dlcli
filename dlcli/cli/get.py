@@ -176,6 +176,7 @@ def series(ctx, metric, agent, tag, resolution, period):
     if tag:
         for series in Series(ctx).get_tag_series(tag, metric, resolution, period):
             points = []
+            click.echo(click.style(series['source']['name'], fg='green'))
             for point in series['points']:
                 points.append(point['avg'])
             print ','.join(map(str, points))
