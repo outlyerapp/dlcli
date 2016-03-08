@@ -85,6 +85,7 @@ def cli(ctx, debug, loglevel, settingsfile, backupdir, url, org, account, key):
     except IOError:
         pass
 
+
 @click.command(short_help="status")
 @click.pass_context
 def status(ctx):
@@ -98,12 +99,16 @@ def status(ctx):
     click.echo('Account: %s' % account)
     click.echo('Key: %s' % key)
 
-    resp = requests.get(url + '/orgs/' + org, headers={'Token': key}).status_code
+    resp = requests.get(url + '/orgs/' + org,
+                        headers={'Token': key}).status_code
     if resp == 200:
         click.echo('Authenticated: %s' % click.style('True', fg='green'))
     else:
-        click.echo('Authenticated: %s, Status Code: %s' % (
-            click.style('False', fg='red'),
-            click.style(str(resp), fg='red')))
+        click.echo('Authenticated: %s, Status Code: %s' %
+                   (click.style('False',
+                                fg='red'), click.style(
+                                    str(resp),
+                                    fg='red')))
+
 
 cli.add_command(status)

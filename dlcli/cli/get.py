@@ -79,17 +79,16 @@ def rules(ctx):
                 agent_names = []
                 triggered_by = criteria['triggered_by']
                 for agent_id in triggered_by:
-                    agent_names.append(Agents(ctx).get_agent_name_from_id(agent_id))
-                click.echo(click.style('%s %s %s triggered by %s', fg='red') % (
-                    rule['name'],
-                    criteria['metric'],
-                    message,
-                    ','.join(map(str, agent_names))))
+                    agent_names.append(Agents(ctx).get_agent_name_from_id(
+                        agent_id))
+                click.echo(click.style('%s %s %s triggered by %s',
+                                       fg='red') %
+                           (rule['name'], criteria['metric'], message,
+                            ','.join(map(str, agent_names))))
             else:
-                click.echo(click.style('%s %s %s', fg='green') % (
-                    rule['name'],
-                    criteria['metric'],
-                    message))
+                click.echo(click.style('%s %s %s',
+                                       fg='green') %
+                           (rule['name'], criteria['metric'], message))
 
 
 @click.command(short_help="Get alerts")
@@ -115,12 +114,12 @@ def alerts(ctx):
                 agent_names = []
                 triggered_by = criteria['triggered_by']
                 for agent_id in triggered_by:
-                    agent_names.append(Agents(ctx).get_agent_name_from_id(agent_id))
-                click.echo(click.style('%s %s %s triggered by %s', fg='red') % (
-                    rule['name'],
-                    criteria['metric'],
-                    message,
-                    ','.join(map(str, agent_names))))
+                    agent_names.append(Agents(ctx).get_agent_name_from_id(
+                        agent_id))
+                click.echo(click.style('%s %s %s triggered by %s',
+                                       fg='red') %
+                           (rule['name'], criteria['metric'], message,
+                            ','.join(map(str, agent_names))))
 
 
 @click.command(short_help="Get tags")
@@ -151,6 +150,36 @@ def metrics(ctx, agent, tag):
             print metric['name']
 
 
+@click.command(short_help="Get series")
+@click.option('--agent', help='Agent Name', type=str, default=None)
+@click.option('--tag', help='Tag Name', type=str, default=None)
+@click.option('--resolution', help='Time between points', type=int, default=30)
+@click.option('--period', help='Length of time', type=int, default=600)
+@click.argument('metric')
+@click.pass_context
+def series(ctx, metric, agent, tag, resolution, period):
+    if not agent and not tag:
+        click.echo('Specify an agent or tag to get the metrics')
+        sys.exit(1)
+    points = []
+    if agent:
+        name_map = {}
+
+        agent_details = Agents(ctx).get_agents()
+        for a in agent_details:
+            if a['name'] == agent:
+                name_map[a['id']] = a['name']
+        for series in Series(ctx).get_agent_series(a['id'], metric, resolution, period):
+            for point in series['points']:
+                points.append(point['avg'])
+            print ','.join(map(str, points))
+    if tag:
+        for series in Series(ctx).get_tag_series(tag, metric, resolution, period):
+            for point in series['points']:
+                points.append(point['avg'])
+            print ','.join(map(str, points))
+
+
 get.add_command(accounts)
 get.add_command(agents)
 get.add_command(dashboards)
@@ -161,3 +190,4 @@ get.add_command(rules)
 get.add_command(alerts)
 get.add_command(tags)
 get.add_command(metrics)
+get.add_command(series)
