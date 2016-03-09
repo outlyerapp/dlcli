@@ -192,9 +192,14 @@ def series(ctx, metric, agent, tag, resolution, period):
             points = []
             click.echo(click.style(series['source']['name'], fg='green'))
             for point in series['points']:
-                points.append(point['avg'])
+                if point['type'] == 'boolean':
+                    if point['any']:
+                        points.append(0)
+                    else:
+                        points.append(2)
+                else:
+                    points.append(point['avg'])
             print ','.join(map(str, points))
-
 
 get.add_command(accounts)
 get.add_command(agents)
