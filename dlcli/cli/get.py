@@ -19,13 +19,21 @@ def accounts(ctx):
 
 
 @click.command(short_help="Get agents")
+@click.argument('status', type=click.Choice(['all', 'up', 'down']), default='all')
 @click.pass_context
-def agents(ctx):
+def agents(ctx, status):
     for agent in Agents(ctx).get_agents():
-        if agent['presence_state'] == 'online':
-            click.echo(click.style(agent['name'], fg='green'))
-        else:
-            click.echo(click.style(agent['name'], fg='red'))
+        if status == 'all':
+            if agent['presence_state'] == 'online':
+                click.echo(click.style(agent['name'], fg='green'))
+            else:
+                click.echo(click.style(agent['name'], fg='red'))
+        if status == 'up':
+            if agent['presence_state'] == 'online':
+                click.echo(click.style(agent['name'], fg='green'))
+        if status == 'down':
+            if agent['presence_state'] != 'online':
+                click.echo(click.style(agent['name'], fg='red'))
 
 
 @click.command(short_help="Get dashboards")
@@ -193,3 +201,4 @@ get.add_command(alerts)
 get.add_command(tags)
 get.add_command(metrics)
 get.add_command(series)
+
