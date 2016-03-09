@@ -179,7 +179,13 @@ def series(ctx, metric, agent, tag, resolution, period):
         for series in Series(ctx).get_agent_series(name_map[agent], metric, resolution, period):
             points = []
             for point in series['points']:
-                points.append(point['avg'])
+                if point['type'] == 'boolean':
+                    if point['any']:
+                        points.append(0)
+                    else:
+                        points.append(2)
+                else:
+                    points.append(point['avg'])
             print ','.join(map(str, points))
     if tag:
         for series in Series(ctx).get_tag_series(tag, metric, resolution, period):
