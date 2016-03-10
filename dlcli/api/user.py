@@ -29,4 +29,4 @@ class User(object):
     def delete_user_token(self, name):
         return requests.delete(
             self.url + '/user/tokens/' + name,
-            headers=self.headers).json()
+            headers=self.headers)
