@@ -125,6 +125,19 @@ def tag(ctx, tag):
             fg='red'))
 
 
+@click.command(short_help="rm token")
+@click.argument('name')
+@click.pass_context
+def token(ctx, name):
+    resp = User(ctx).delete_user_token(name)
+    if resp.status_code == 204:
+        click.echo('Token tag ' + tag)
+    else:
+        click.echo('Error deleting ' + tag + '. Status Code: ' + click.style(
+            str(resp.status_code),
+            fg='red'))
+
+
 rm.add_command(account)
 rm.add_command(agent)
 rm.add_command(dashboard)
@@ -133,3 +146,4 @@ rm.add_command(org)
 rm.add_command(plugin)
 rm.add_command(rule)
 rm.add_command(tag)
+rm.add_command(token)

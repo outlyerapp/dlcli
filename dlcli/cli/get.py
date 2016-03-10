@@ -207,7 +207,9 @@ def series(ctx, metric, agent, tag, resolution, period):
 @click.pass_context
 def user(ctx, tokens):
     if tokens:
-        print User(ctx).get_user_tokens()
+        token_list = User(ctx).get_user_tokens()
+        for t in token_list:
+            print t['name']
     else:
         print User(ctx).get_user()['name'].lower()
 

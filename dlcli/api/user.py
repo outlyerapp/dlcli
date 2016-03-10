@@ -20,3 +20,13 @@ class User(object):
             self.url + '/user/tokens',
             headers=self.headers).json()
 
+    def create_user_token(self, name):
+        return requests.post(
+            self.url + '/user/tokens',
+            headers=self.headers,
+            data={'name': name}).json()
+
+    def delete_user_token(self, name):
+        return requests.delete(
+            self.url + '/user/tokens/' + name,
+            headers=self.headers).json()
