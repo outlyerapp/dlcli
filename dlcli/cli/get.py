@@ -201,6 +201,17 @@ def series(ctx, metric, agent, tag, resolution, period):
                     points.append(point['avg'])
             print ','.join(map(str, points))
 
+
+@click.command(short_help="Get user")
+@click.argument('tokens', required=False)
+@click.pass_context
+def user(ctx, tokens):
+    if tokens:
+        print User(ctx).get_user_tokens()
+    else:
+        print User(ctx).get_user()['name'].lower()
+
+
 get.add_command(accounts)
 get.add_command(agents)
 get.add_command(dashboards)
@@ -212,4 +223,5 @@ get.add_command(alerts)
 get.add_command(tags)
 get.add_command(metrics)
 get.add_command(series)
+get.add_command(user)
 

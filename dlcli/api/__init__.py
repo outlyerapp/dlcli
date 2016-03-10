@@ -10,6 +10,6 @@ from .rpc import *
 from .rules import *
 from .shells import *
 from .tags import *
-from .users import *
+from .user import *
 from .metrics import *
 from .series import *
