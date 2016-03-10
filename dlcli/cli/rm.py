@@ -131,9 +131,9 @@ def tag(ctx, tag):
 def token(ctx, name):
     resp = User(ctx).delete_user_token(name)
     if resp.status_code == 204:
-        click.echo('Token tag ' + tag)
+        click.echo('Deleted token ' + name)
     else:
-        click.echo('Error deleting ' + tag + '. Status Code: ' + click.style(
+        click.echo('Error deleting ' + name + '. Status Code: ' + click.style(
             str(resp.status_code),
             fg='red'))
 
