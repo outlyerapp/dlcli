@@ -99,7 +99,7 @@ def status(ctx):
     click.echo('Account: %s' % account)
     click.echo('Key: %s' % key)
 
-    resp = requests.get(url + '/orgs/' + org, headers={'Token': key}).status_code
+    resp = requests.get(url + '/orgs/' + org, headers={'Authorization': "Bearer " + key}).status_code
     if resp == 200:
         click.echo('Authenticated: %s' % click.style('True', fg='green'))
     else:

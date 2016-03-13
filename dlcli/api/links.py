@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 class Links(object):
     def __init__(self, ctx):
         self.ctx = ctx
-        self.headers = {"Token": ctx.parent.parent.params['key']}
+        self.headers = {'Authorization': "Bearer " + ctx.parent.parent.params['key']}
 
     def get_links(self):
         return requests.get(
