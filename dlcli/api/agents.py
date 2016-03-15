@@ -21,10 +21,13 @@ class Agents(object):
             headers=self.headers,
             data=payload)
 
-    def delete_agent(self, agent):
-        return requests.delete(
-            utils.build_api_url(self.ctx, 'agents') + '/' + agent,
-            headers=self.headers)
+    def delete_agent(self, agent_name):
+        agent_map = self.get_agents()
+        for agent in agent_map:
+            if agent['name'] == agent_name:
+                return requests.delete(
+                    utils.build_api_url(self.ctx, 'agents') + '/' + agent['id'],
+                    headers=self.headers)
 
     def get_agent_name_from_id(self, id):
         agents = requests.get(
