@@ -94,12 +94,12 @@ def status(ctx):
     account = str(ctx.parent.params['account'])
     key = str(ctx.parent.params['key'])
 
-    click.echo('URL: %s' % url)
+    click.echo('URL: %s/orgs/%s/accounts ' % (url, org))
     click.echo('Organization: %s' % org)
     click.echo('Account: %s' % account)
     click.echo('Key: %s' % key)
 
-    resp = requests.get(url + '/orgs/' + org, headers={'Authorization': "Bearer " + key}).status_code
+    resp = requests.get(url + '/orgs/' + org + '/accounts', headers={'Authorization': "Bearer " + key}).status_code
     if resp == 200:
         click.echo('Authenticated: %s' % click.style('True', fg='green'))
     else:
