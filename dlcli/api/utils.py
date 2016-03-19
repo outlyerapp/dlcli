@@ -9,6 +9,7 @@ import plugins
 import dashboards
 import rules
 import links
+import click
 from terminaltables import SingleTable
 from termcolor import colored
 
@@ -213,3 +214,17 @@ def restore_org(ctx, org):
     _accounts = accounts.Accounts(ctx)
     for a in _accounts.get_accounts():
         restore_account(ctx, a['name'])
+
+
+def agent_status_check(agent, status):
+    if status == 'all':
+        if agent['presence_state'] == 'online':
+            click.echo(click.style(agent['name'], fg='green'))
+        else:
+            click.echo(click.style(agent['name'], fg='red'))
+    if status == 'up':
+        if agent['presence_state'] == 'online':
+            click.echo(click.style(agent['name'], fg='green'))
+    if status == 'down':
+        if agent['presence_state'] != 'online':
+            click.echo(click.style(agent['name'], fg='red'))

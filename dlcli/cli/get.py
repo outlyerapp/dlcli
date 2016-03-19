@@ -14,26 +14,21 @@ def get(ctx):
 @click.command(short_help="Get accounts")
 @click.pass_context
 def accounts(ctx):
-    for account in Accounts(ctx).get_accounts():
-        click.echo(account['name'])
+    for a in Accounts(ctx).get_accounts():
+        click.echo(a['name'])
 
 
 @click.command(short_help="Get agents")
 @click.argument('status', type=click.Choice(['all', 'up', 'down']), default='all')
+@click.option('--tag', help='Tag Name', type=str, default=None)
 @click.pass_context
-def agents(ctx, status):
-    for agent in Agents(ctx).get_agents():
-        if status == 'all':
-            if agent['presence_state'] == 'online':
-                click.echo(click.style(agent['name'], fg='green'))
-            else:
-                click.echo(click.style(agent['name'], fg='red'))
-        if status == 'up':
-            if agent['presence_state'] == 'online':
-                click.echo(click.style(agent['name'], fg='green'))
-        if status == 'down':
-            if agent['presence_state'] != 'online':
-                click.echo(click.style(agent['name'], fg='red'))
+def agents(ctx, status, tag):
+    for a in Agents(ctx).get_agents():
+        if tag:
+            if tag in a['tags']:
+                utils.agent_status_check(a, status)
+        else:
+            utils.agent_status_check(a, status)
 
 
 @click.command(short_help="Get dashboards")
@@ -46,22 +41,22 @@ def dashboards(ctx):
 @click.command(short_help="Get plugins")
 @click.pass_context
 def plugins(ctx):
-    for plugin in Plugins(ctx).get_plugins():
-        click.echo(plugin['name'])
+    for p in Plugins(ctx).get_plugins():
+        click.echo(p['name'])
 
 
 @click.command(short_help="Get links")
 @click.pass_context
 def links(ctx):
-    for link in Links(ctx).get_links():
-        click.echo(link['id'])
+    for l in Links(ctx).get_links():
+        click.echo(l['id'])
 
 
 @click.command(short_help="Get orgs")
 @click.pass_context
 def orgs(ctx):
-    for org in Orgs(ctx).get_orgs():
-        click.echo(org['name'])
+    for o in Orgs(ctx).get_orgs():
+        click.echo(o['name'])
 
 
 @click.command(short_help="Get rules")
@@ -133,8 +128,8 @@ def alerts(ctx):
 @click.command(short_help="Get tags")
 @click.pass_context
 def tags(ctx):
-    for tag in Tags(ctx).get_tags():
-        click.echo(tag['name'])
+    for t in Tags(ctx).get_tags():
+        click.echo(t['name'])
 
 
 @click.command(short_help="Get metrics")
