@@ -146,12 +146,12 @@ def metrics(ctx, agent, tag):
         click.echo('Specify an agent or tag to get the metrics')
         sys.exit(1)
     if agent:
-        name_map = {}
+        agent_id = None
         agent_details = Agents(ctx).get_agents()
         for a in agent_details:
             if a['name'] == agent:
-                name_map[a['id']] = a['name']
-        for metric in Metrics(ctx).get_agent_metrics(a['id']):
+                agent_id = a['id']
+        for metric in Metrics(ctx).get_agent_metrics(agent_id):
             print metric['name']
     if tag:
         for metric in Metrics(ctx).get_tag_metrics(tag):
@@ -171,16 +171,16 @@ def series(ctx, metric, agent, tag, resolution, period):
         sys.exit(1)
 
     if agent:
-        name_map = {}
+        agent_id = None
         agent_details = Agents(ctx).get_agents()
         for a in agent_details:
             if a['name'] == agent:
-                name_map[a['name']] = a['id']
-        for series in Series(ctx).get_agent_series(name_map[agent], metric, resolution, period):
+                agent_id = a['id']
+        for s in Series(ctx).get_agent_series(agent_id, metric, resolution, period):
             points = []
-            for point in series['points']:
+            for point in s['points']:
                 if point['type'] == 'boolean':
-                    if point['any']:
+                    if point['all']:
                         points.append(0)
                     else:
                         points.append(2)
@@ -188,12 +188,12 @@ def series(ctx, metric, agent, tag, resolution, period):
                     points.append(point['avg'])
             print ','.join(map(str, points))
     if tag:
-        for series in Series(ctx).get_tag_series(tag, metric, resolution, period):
+        for s in Series(ctx).get_tag_series(tag, metric, resolution, period):
             points = []
-            click.echo(click.style(series['source']['name'], fg='green'))
-            for point in series['points']:
+            click.echo(click.style(s['source']['name'], fg='green'))
+            for point in s['points']:
                 if point['type'] == 'boolean':
-                    if point['any']:
+                    if point['all']:
                         points.append(0)
                     else:
                         points.append(2)
