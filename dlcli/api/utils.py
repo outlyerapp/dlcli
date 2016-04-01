@@ -9,6 +9,7 @@ import plugins
 import dashboards
 import rules
 import links
+import orgs
 import click
 from terminaltables import SingleTable
 from termcolor import colored
@@ -228,3 +229,19 @@ def agent_status_check(agent, status):
     if status == 'down':
         if agent['presence_state'] != 'online':
             click.echo(click.style(agent['name'], fg='red'))
+
+
+def search_agent(ctx, agent):
+    org_list = orgs.Orgs(ctx).get_orgs()
+    for _org in org_list:
+        ctx.parent.parent.params['org'] = _org['name']
+        account_list = accounts.Accounts(ctx).get_accounts()
+        for _account in account_list:
+            ctx.parent.parent.params['account'] = _account['name']
+            agent_list = agents.Agents(ctx).get_agents()
+            for _agent in agent_list:
+                if _agent['name'] == agent:
+                    click.echo('Organization: ' + _org['name'] + ' Account: ' + _account['name'] + ' Agent: ' + _agent['name'])
+
+
+
