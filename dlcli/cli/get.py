@@ -31,6 +31,13 @@ def agents(ctx, status, tag):
             utils.agent_status_check(a, status)
 
 
+@click.command(short_help="Get an agent")
+@click.argument('name')
+@click.pass_context
+def agent(ctx, name):
+    click.echo(json.dumps(Agents(ctx).get_agent(name), indent=4))
+
+
 @click.command(short_help="Get dashboards")
 @click.pass_context
 def dashboards(ctx):
@@ -211,6 +218,7 @@ def user(ctx, tokens):
 
 get.add_command(accounts)
 get.add_command(agents)
+get.add_command(agent)
 get.add_command(dashboards)
 get.add_command(links)
 get.add_command(orgs)

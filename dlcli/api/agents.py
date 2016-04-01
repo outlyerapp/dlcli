@@ -15,6 +15,14 @@ class Agents(object):
             utils.build_api_url(self.ctx, 'agents'),
             headers=self.headers).json()
 
+    def get_agent(self, agent_name):
+        agent_map = self.get_agents()
+        for agent in agent_map:
+            if agent['name'] == agent_name:
+                return requests.get(
+                    utils.build_api_url(self.ctx, 'agents') + '/' + agent['id'],
+                    headers=self.headers).json()
+
     def register_agent(self, payload):
         return requests.post(
             utils.build_api_url(self.ctx, 'agents/register'),
