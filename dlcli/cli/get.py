@@ -105,19 +105,29 @@ def rules(ctx):
 @click.pass_context
 def alerts(ctx):
     _rules = Rules(ctx)
-    for rule in _rules.get_rules():
-        for criteria in _rules.get_criteria(rule['name']):
+    for r in _rules.get_rules():
+        for criteria in _rules.get_criteria(r['name']):
             if criteria['condition']['threshold']:
+                criteria_type = criteria['scopes'][0]['type']
+                if criteria_type == 'tag':
+                    scope_key = 'id'
+                else:
+                    scope_key = 'name'
                 message = "on %s %s %s %d for %d seconds" % (
                     criteria['scopes'][0]['type'],
-                    criteria['scopes'][0]['name'],
+                    criteria['scopes'][0][scope_key],
                     criteria['condition']['operator'],
                     criteria['condition']['threshold'],
                     criteria['condition']['timeout'])
             else:
+                criteria_type = criteria['scopes'][0]['type']
+                if criteria_type == 'tag':
+                    scope_key = 'id'
+                else:
+                    scope_key = 'name'
                 message = 'on %s %s for %d seconds' % (
                     criteria['scopes'][0]['type'],
-                    criteria['scopes'][0]['name'],
+                    criteria['scopes'][0][scope_key],
                     criteria['condition']['timeout'])
 
             if criteria['state'] == 'hit':
@@ -128,7 +138,7 @@ def alerts(ctx):
                         agent_id))
                 click.echo(click.style('%s %s %s triggered by %s',
                                        fg='red') %
-                           (rule['name'], criteria['metric'], message,
+                           (r['name'], criteria['metric'], message,
                             ','.join(map(str, agent_names))))
 
 
