@@ -185,9 +185,10 @@ def metrics(ctx, agent, tag):
 @click.option('--tag', help='Tag Name', type=str, default=None)
 @click.option('--resolution', help='Time between points', type=int, default=30)
 @click.option('--period', help='Length of time', type=int, default=600)
+@click.option('--lastvalue', is_flag=True, help='Gets the last value only')
 @click.argument('metric')
 @click.pass_context
-def series(ctx, metric, agent, tag, resolution, period):
+def series(ctx, metric, agent, tag, resolution, period, lastvalue):
     if not agent and not tag:
         click.echo('Specify an agent or tag to get the metrics')
         sys.exit(1)
@@ -208,7 +209,10 @@ def series(ctx, metric, agent, tag, resolution, period):
                         points.append(2)
                 else:
                     points.append(point['avg'])
-            print ','.join(map(str, points))
+            if lastvalue:
+                print points[-1]
+            else:
+                print ','.join(map(str, points))
     if tag:
         for s in Series(ctx).get_tag_series(tag, metric, resolution, period):
             points = []
@@ -221,7 +225,10 @@ def series(ctx, metric, agent, tag, resolution, period):
                         points.append(2)
                 else:
                     points.append(point['avg'])
-            print ','.join(map(str, points))
+            if lastvalue:
+                print points[-1]
+            else:
+                print ','.join(map(str, points))
 
 
 @click.command(short_help="Get user")
