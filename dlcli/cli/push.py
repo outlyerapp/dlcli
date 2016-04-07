@@ -16,21 +16,21 @@ def push(ctx):
 @click.argument('dashboard')
 @click.pass_context
 def dashboard(ctx, dashboard):
-    print Dashboards(ctx).import_dashboard(dashboard)
+    Dashboards(ctx).import_dashboard(dashboard)
 
 
 @click.command(short_help="Push a plugin")
 @click.argument('plugin')
 @click.pass_context
 def plugin(ctx, plugin):
-    print Plugins(ctx).import_plugin(plugin)
+    Plugins(ctx).import_plugin(plugin)
 
 
 @click.command(short_help="Push a rule")
 @click.argument('rule')
 @click.pass_context
 def rule(ctx, rule):
-    print Rules(ctx).import_rule(rule)
+    Rules(ctx).import_rule(rule)
 
 
 push.add_command(dashboard)
