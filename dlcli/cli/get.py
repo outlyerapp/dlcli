@@ -65,10 +65,16 @@ def orgs(ctx):
     for o in Orgs(ctx).get_orgs():
         click.echo(o['name'])
 
-
 @click.command(short_help="Get rules")
 @click.pass_context
 def rules(ctx):
+    _rules = Rules(ctx)
+    for r in _rules.get_rules():
+        print r['name']
+
+@click.command(short_help="Get criterias")
+@click.pass_context
+def criterias(ctx):
     _rules = Rules(ctx)
     for r in _rules.get_rules():
         for criteria in _rules.get_criteria(r['name']):
@@ -250,6 +256,7 @@ get.add_command(dashboards)
 get.add_command(links)
 get.add_command(orgs)
 get.add_command(plugins)
+get.add_command(criterias)
 get.add_command(rules)
 get.add_command(alerts)
 get.add_command(tags)

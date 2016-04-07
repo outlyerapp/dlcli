@@ -24,6 +24,7 @@ class Agents(object):
                     headers=self.headers).json()
 
     def register_agent(self, payload, finger):
+        print utils.build_api_url(self.ctx, 'agents/%s/ping' % finger)
         return requests.post(
             utils.build_api_url(self.ctx, 'agents/%s/ping' % finger),
             headers=self.headers,
