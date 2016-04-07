@@ -2,6 +2,7 @@ from ..cli import *
 from ..api import *
 import click
 import logging
+import uuid
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +17,7 @@ def source(ctx):
 @click.argument('name')
 @click.pass_context
 def register(ctx, name):
+    finger = uuid.uuid4()
     payload = {
         'mac': '',
         'hostname': name,
@@ -27,7 +29,7 @@ def register(ctx, name):
         'mode': 'SOLO',
         'name': name
     }
-    print Agents(ctx).register_agent(payload)
+    print Agents(ctx).register_agent(payload, finger)
 
 
 @click.command(short_help="Ping source")
