@@ -1,6 +1,7 @@
 import logging
 import requests
 import utils
+import uuid
 
 logger = logging.getLogger(__name__)
 
@@ -24,8 +25,15 @@ class Agents(object):
                     headers=self.headers).json()
 
     def register_agent(self, payload):
+        finger = uuid.uuid4()
         return requests.post(
-            utils.build_api_url(self.ctx, 'agents/register'),
+            utils.build_api_url(self.ctx, 'agents/%s/ping' % finger),
+            headers=self.headers,
+            data=payload)
+
+    def ping_agent(self, payload, finger):
+        return requests.post(
+            utils.build_api_url(self.ctx, 'agents/%s/ping' % finger),
             headers=self.headers,
             data=payload)
 

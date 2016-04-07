@@ -17,8 +17,9 @@ def create(ctx):
 def token(ctx, name):
     try:
         print User(ctx).create_user_token(name)['token']
-    except:
-        print "token creation failed. is the name already taken?"
+    except Exception, e:
+        print "token creation failed. is the name already taken?: %s" % e
+
 
 create.add_command(token)
 
