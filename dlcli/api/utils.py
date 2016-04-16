@@ -46,8 +46,7 @@ def print_run_table(table_data):
     print table.table
 
 
-def save_setting(ctx, setting):
-    settings_file = ctx.parent.parent.params['settingsfile']
+def save_setting(setting, settings_file):
     try:
         stream = open(settings_file, 'r')
         data = yaml.load(stream)
@@ -60,10 +59,12 @@ def save_setting(ctx, setting):
                                        explicit_start=True))
 
 
-def build_api_url(ctx, endpoint='', orglevel=False, accountlevel=False):
-    url = ctx.parent.parent.params['url']
-    org = ctx.parent.parent.params['org']
-    account = ctx.parent.parent.params['account']
+def build_api_url(url,
+                  org,
+                  account,
+                  endpoint='',
+                  orglevel=False,
+                  accountlevel=False):
     if orglevel:
         return url + '/orgs'
     if accountlevel:
@@ -78,19 +79,15 @@ def create_dir(path, directory):
     return new_directory
 
 
-def backup_account(ctx, account):
+def backup_account(url, key, org, account, backupdir):
     #  create directory structure
-    backupdir = ctx.parent.parent.params['backupdir']
-    org = ctx.parent.parent.params['org']
-    ctx.parent.parent.params['account'] = account
-
     backup_dir = create_dir(os.getcwd(), backupdir)
     org_dir = create_dir(backup_dir, org)
     account_dir = create_dir(org_dir, account)
 
     # backup agents
     agent_dir = create_dir(account_dir, 'agents')
-    for agent_json in agents.Agents(ctx).get_agents():
+    for agent_json in agents.get_agents(url, key, org, account):
         agent_path = os.path.join(agent_dir, str(agent_json['name']) + '.json')
         remove_keys = ['presence_state', 'created', 'modified', 'heartbeat']
         for key in remove_keys:
@@ -101,7 +98,7 @@ def backup_account(ctx, account):
 
     # backup dashboards
     dashboard_dir = create_dir(account_dir, 'dashboards')
-    for d in dashboards.Dashboards(ctx).get_dashboards():
+    for d in dashboards.get_dashboards(url=url, org=org, account=account, key=key):
         dashboard_path = os.path.join(dashboard_dir, str(d['name']) + '.yaml')
         with open(dashboard_path, 'w') as f:
             f.write(yaml.safe_dump(d,
@@ -110,19 +107,18 @@ def backup_account(ctx, account):
 
     # backup plugins
     plugin_dir = create_dir(account_dir, 'plugins')
-    for p in plugins.Plugins(ctx).get_plugins():
+    for p in plugins.get_plugins(url=url, org=org, account=account, key=key):
         plugin_path = os.path.join(plugin_dir,
                                    str(p['name']) + '.' + str(p['extension']))
         with open(plugin_path, 'w') as f:
-            f.write(plugins.Plugins(ctx).export_plugin(p['name']))
+            f.write(plugins.export_plugin(plugin_name=p['name'], url=url, org=org, account=account, key=key))
 
     # backup rules
     rule_dir = create_dir(account_dir, 'rules')
-    for r in rules.Rules(ctx).get_rules():
+    for r in rules.get_rules(url=url, org=org, account=account, key=key):
         rule_path = os.path.join(rule_dir, str(r['name']) + '.yaml')
         with open(rule_path, 'w') as f:
-            rule_content = yaml.safe_load(rules.Rules(ctx).export_rule(r[
-                'id']))
+            rule_content = yaml.safe_load(rules.export_rule(rule_id=r['id'], url=url, org=org, account=account, key=key))
             if rule_content['actions']:
                 action_count = len(rule_content['actions'])
                 for i in range(action_count):
@@ -130,24 +126,20 @@ def backup_account(ctx, account):
                         del rule_content['actions'][i]['details']['status']
                     except KeyError:
                         continue
-            f.write(yaml.safe_dump(rule_content,
-                                   default_flow_style=False,
-                                   explicit_start=True))
+            f.write(yaml.safe_dump(rule_content, default_flow_style=False, explicit_start=True))
 
     # backup links
     link_dir = create_dir(account_dir, 'links')
-    for l in links.Links(ctx).get_links():
+    for l in links.get_links(url=url, org=org, account=account, key=key):
         link_path = os.path.join(link_dir, l['id'] + '.json')
-        link_json = links.Links(ctx).export_link(l['id'])
+        link_json = links.export_link(link_id=l['id'], url=url, org=org, account=account, key=key)
         with open(link_path, 'w') as f:
             f.write(json.dumps(link_json, indent=4))
 
 
-def backup_org(ctx, org):
-    ctx.parent.parent.params['org'] = org
-    _accounts = accounts.Accounts(ctx)
-    for a in _accounts.get_accounts():
-        backup_account(ctx, a['name'])
+def backup_org(url, key, org, backupdir):
+    for a in accounts.get_accounts(url=url, org=org, key=key):
+        backup_account(url, key, org, a['name'], backupdir)
 
 
 def read_file_content(file_path):
@@ -159,18 +151,13 @@ def read_file_content(file_path):
             raise
 
 
-def restore_account(ctx, account):
-    ctx.parent.parent.params['account'] = account
-    backup_dir = ctx.parent.parent.params['backupdir']
-    org_dir = ctx.parent.parent.params['org']
-    account_dir = ctx.parent.parent.params['account']
+def restore_account(url, key, org, account, backupdir):
 
-    agents_dir = os.path.join(backup_dir, org_dir, account_dir, 'agents')
-    dashboards_dir = os.path.join(backup_dir, org_dir, account_dir,
-                                  'dashboards')
-    plugins_dir = os.path.join(backup_dir, org_dir, account_dir, 'plugins')
-    rules_dir = os.path.join(backup_dir, org_dir, account_dir, 'rules')
-    links_dir = os.path.join(backup_dir, org_dir, account_dir, 'links')
+    agents_dir = os.path.join(backupdir, org, account, 'agents')
+    dashboards_dir = os.path.join(backupdir, org, account, 'dashboards')
+    plugins_dir = os.path.join(backupdir, org, account, 'plugins')
+    rules_dir = os.path.join(backupdir, org, account, 'rules')
+    links_dir = os.path.join(backupdir, org, account, 'links')
 
     # restore agents
     agent_files = glob.glob(agents_dir + '/*.json')
@@ -187,34 +174,32 @@ def restore_account(ctx, account):
             "mode": agent_json['mode'],
             "status": agent_json['status']
         }
-        agents.Agents(ctx).register_agent(payload)
+        agents.register_agent(url=url, org=org, account=account, key=key, payload=payload, finger=agent_json['id'])
 
     # restore dashboards
     dashboard_files = glob.glob(dashboards_dir + '/*.yaml')
     for dashboard_path in dashboard_files:
-        dashboards.Dashboards(ctx).import_dashboard(dashboard_path)
+        dashboards.import_dashboard(dashboard_path)
 
     # restore plugins
     plugin_files = glob.glob(plugins_dir + '/*')
     for plugin_path in plugin_files:
-        plugins.Plugins(ctx).import_plugin(plugin_path)
+        plugins.import_plugin(plugin_path)
 
     # restore rules
     rule_files = glob.glob(rules_dir + '/*.yaml')
     for rule_path in rule_files:
-        rules.Rules(ctx).import_rule(rule_path)
+         rules.import_rule(rule_path)
 
     # restore links
     link_files = glob.glob(links_dir + '/*.json')
     for link_path in link_files:
-        links.Links(ctx).import_link(link_path)
+        links.import_link(link_path)
 
 
-def restore_org(ctx, org):
-    ctx.parent.parent.params['org'] = org
-    _accounts = accounts.Accounts(ctx)
-    for a in _accounts.get_accounts():
-        restore_account(ctx, a['name'])
+def restore_org(url, key, org, backupdir):
+    for a in accounts.get_accounts():
+        restore_account(url, key, org, a['name'], backupdir)
 
 
 def agent_status_check(agent, status):
@@ -232,16 +217,14 @@ def agent_status_check(agent, status):
 
 
 def search_agent(ctx, agent):
-    org_list = orgs.Orgs(ctx).get_orgs()
+    org_list = orgs.get_orgs()
     for _org in org_list:
         ctx.parent.parent.params['org'] = _org['name']
-        account_list = accounts.Accounts(ctx).get_accounts()
+        account_list = accounts.get_accounts()
         for _account in account_list:
             ctx.parent.parent.params['account'] = _account['name']
-            agent_list = agents.Agents(ctx).get_agents()
+            agent_list = agents.get_agents()
             for _agent in agent_list:
                 if _agent['name'] == agent:
-                    click.echo('Organization: ' + _org['name'] + ' Account: ' + _account['name'] + ' Agent: ' + _agent['name'])
-
-
-
+                    click.echo('Organization: ' + _org['name'] + ' Account: ' +
+                               _account['name'] + ' Agent: ' + _agent['name'])

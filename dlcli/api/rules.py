@@ -6,41 +6,56 @@ import utils
 logger = logging.getLogger(__name__)
 
 
-class Rules(object):
-    def __init__(self, ctx):
-        self.ctx = ctx
-        self.headers = {'Authorization': "Bearer " + ctx.parent.parent.params['key']}
+def get_rules(url='', org='', account='', key='', **kwargs):
+    return requests.get(
+        utils.build_api_url(url,
+                            org,
+                            account,
+                            endpoint='rules'),
+        headers={'Authorization': "Bearer " + key}).json()
 
-    def get_rules(self):
-        return requests.get(
-            utils.build_api_url(self.ctx, 'rules'),
-            headers=self.headers).json()
 
-    def get_criteria(self, rule):
-        return requests.get(
-            utils.build_api_url(self.ctx, 'rules' + '/' + rule + '/criteria'),
-            headers=self.headers).json()
+def get_criteria(url='', org='', account='', key='', rule_id='', **kwargs):
+    return requests.get(
+        utils.build_api_url(url,
+                            org,
+                            account,
+                            endpoint='rules' + '/' + rule_id + '/criteria'),
+        headers={'Authorization': "Bearer " + key}).json()
 
-    def export_rule(self, rule):
-        self.headers.update({"Accept": "application/yaml"})
-        return requests.get(
-            utils.build_api_url(self.ctx, 'rules') + '/' + rule,
-            headers=self.headers).content
 
-    def delete_rule(self, rule):
-        return requests.delete(
-            utils.build_api_url(self.ctx, 'rules') + '/' + rule,
-            headers=self.headers)
+def export_rule(url='', org='', account='', key='', rule_id='', **kwargs):
+    return requests.get(
+        utils.build_api_url(url,
+                            org,
+                            account,
+                            endpoint='rules') + '/' + rule_id,
+        headers={'Authorization': "Bearer " + key, "Accept": "application/yaml"}).content
 
-    def import_rule(self, rule_path):
-        rule_name = os.path.splitext(os.path.basename(rule_path))[0]
-        rule_content = utils.read_file_content(rule_path)
-        requests.post(
-            utils.build_api_url(self.ctx, 'rules'),
-            headers=self.headers,
-            data={"name": rule_name})
-        self.headers.update({"Content-Type": "application/yaml"})
-        requests.put(
-            utils.build_api_url(self.ctx, 'rules' + '/' + rule_name),
-            headers=self.headers,
-            data=rule_content)
+
+def delete_rule(url='', org='', account='', key='', rule_id='', **kwargs):
+    return requests.delete(
+        utils.build_api_url(url,
+                            org,
+                            account,
+                            endpoint='rules') + '/' + rule_id,
+        headers={'Authorization': "Bearer " + key})
+
+
+def import_rule(url='', org='', account='', key='', rule_path='', **kwargs):
+    rule_name = os.path.splitext(os.path.basename(rule_path))[0]
+    rule_content = utils.read_file_content(rule_path)
+    requests.post(
+        utils.build_api_url(url,
+                            org,
+                            account,
+                            endpoint='rules'),
+        headers={'Authorization': "Bearer " + key},
+        data={"name": rule_name})
+    requests.put(
+        utils.build_api_url(url,
+                            org,
+                            account,
+                            endpoint='rules' + '/' + rule_name),
+        headers={'Authorization': "Bearer " + key, "Content-Type": "application/yaml"},
+        data=rule_content)

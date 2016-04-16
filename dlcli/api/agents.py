@@ -5,49 +5,67 @@ import utils
 logger = logging.getLogger(__name__)
 
 
-class Agents(object):
-    def __init__(self, ctx):
-        self.ctx = ctx
-        self.headers = {'Authorization': "Bearer " + ctx.parent.parent.params['key']}
+def get_agents(url='', org='', account='', key='', **kwargs):
+    return requests.get(
+        utils.build_api_url(url,
+                            org,
+                            account,
+                            endpoint='agents'
+                            ),
+        headers={'Authorization': "Bearer " + key}).json()
 
-    def get_agents(self):
-        return requests.get(
-            utils.build_api_url(self.ctx, 'agents'),
-            headers=self.headers).json()
 
-    def get_agent(self, agent_name):
-        agent_map = self.get_agents()
-        for agent in agent_map:
-            if agent['name'] == agent_name:
-                return requests.get(
-                    utils.build_api_url(self.ctx, 'agents') + '/' + agent['id'],
-                    headers=self.headers).json()
+def get_agent(url='', org='', account='', key='', agent_name='', **kwargs):
+    agent_map = get_agents(url=url, org=org, account=account, key=key)
+    for agent in agent_map:
+        if agent['name'] == agent_name:
+            return requests.get(
+                utils.build_api_url(url,
+                                    org,
+                                    account,
+                                    endpoint='agents') + '/' + agent['id'],
+                headers={'Authorization': "Bearer " + key}).json()
 
-    def register_agent(self, payload, finger):
-        print utils.build_api_url(self.ctx, 'agents/%s/ping' % finger)
-        return requests.post(
-            utils.build_api_url(self.ctx, 'agents/%s/ping' % finger),
-            headers=self.headers,
-            data=payload)
 
-    def ping_agent(self, payload, finger):
-        return requests.post(
-            utils.build_api_url(self.ctx, 'agents/%s/ping' % finger),
-            headers=self.headers,
-            data=payload)
+def register_agent(url='', org='', account='', key='', payload='', finger='', **kwargs):
+    return requests.post(
+        utils.build_api_url(url,
+                            org,
+                            account,
+                            endpoint='agents/%s/ping' % finger),
+        headers={'Authorization': "Bearer " + key},
+        data=payload)
 
-    def delete_agent(self, agent_name):
-        agent_map = self.get_agents()
-        for agent in agent_map:
-            if agent['name'] == agent_name:
-                return requests.delete(
-                    utils.build_api_url(self.ctx, 'agents') + '/' + agent['id'],
-                    headers=self.headers)
 
-    def get_agent_name_from_id(self, id):
-        agents = requests.get(
-            utils.build_api_url(self.ctx, 'agents'),
-            headers=self.headers).json()
-        for a in agents:
-            if a['id'] == id:
-                return a['name']
+def ping_agent(url='', org='', account='', key='', payload='', finger='', **kwargs):
+    return requests.post(
+        utils.build_api_url(url,
+                            org,
+                            account,
+                            endpoint='agents/%s/ping' % finger),
+        headers={'Authorization': "Bearer " + key},
+        data=payload)
+
+
+def delete_agent(url='', org='', account='', key='', agent_name='', **kwargs):
+    agent_map = get_agents(url, key, org, account)
+    for agent in agent_map:
+        if agent['name'] == agent_name:
+            return requests.delete(
+                utils.build_api_url(url,
+                                    org,
+                                    account,
+                                    endpoint='agents') + '/' + agent['id'],
+                headers={'Authorization': "Bearer " + key})
+
+
+def get_agent_name_from_id(url='', org='', account='', key='', agent_id='', **kwargs):
+    agents = requests.get(
+        utils.build_api_url(url,
+                            org,
+                            account,
+                            endpoint='agents'),
+        headers={'Authorization': "Bearer " + key}).json()
+    for a in agents:
+        if a['id'] == agent_id:
+            return a['name']

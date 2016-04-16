@@ -1,5 +1,5 @@
 import sys
-import click
+import context
 from ..api import *
 from .. import __version__
 
@@ -16,52 +16,38 @@ except ImportError:
             pass
 
 
-DEFAULT_ARGS = {
-    'debug': False,
-    'log_level': 'INFO',
-    'settingsfile': os.path.join(
-        os.path.expanduser("~"), "dlcli.yaml"),
-    'backupdir': 'dlbackups',
-    'url': 'https://app.dataloop.io/api/v1',
-    'org': None,
-    'account': None,
-    'key': None
-}
-
-
 @click.group()
 @click.option('--debug',
               is_flag=True,
               help='Debug mode',
-              default=DEFAULT_ARGS['debug'])
+              default=False)
 @click.option('--loglevel',
               help='Log level',
               type=str,
-              default=DEFAULT_ARGS['log_level'])
+              default='info')
 @click.option('--settingsfile',
               help='Settings File',
               type=str,
-              default=DEFAULT_ARGS['settingsfile'])
+              default=context.settings['settingsfile'])
 @click.option('--backupdir',
               help='Backups Directory',
               type=str,
-              default=DEFAULT_ARGS['backupdir'])
-@click.option('--url', help='API URL', type=str, default=DEFAULT_ARGS['url'])
+              required=False)
+@click.option('--url', help='API URL', type=str)
 @click.option('--org',
               help='Organization Name',
               type=str,
-              default=DEFAULT_ARGS['org'])
+              required=False)
 @click.option('--account',
               help='Account Name',
               type=str,
-              default=DEFAULT_ARGS['account'])
+              required=False)
 @click.option('--key',
               help='API Key',
               type=click.UUID,
-              default=DEFAULT_ARGS['key'])
+              required=False)
 @click.version_option(version=__version__)
-@click.pass_context
-def cli(ctx, debug, loglevel, settingsfile, backupdir, url, org, account, key):
+def cli(settingsfile, url, org, account, key, backupdir, loglevel, debug):
     if debug:
         numeric_log_level = logging.DEBUG or loglevel.upper() == 'DEBUG'
         format_string = '%(asctime)s %(levelname)-9s %(name)22s %(funcName)22s:%(lineno)-4d %(message)s'
@@ -79,31 +65,42 @@ def cli(ctx, debug, loglevel, settingsfile, backupdir, url, org, account, key):
     logging.getLogger("requests").setLevel(logging.WARNING)
 
     try:
+        # load some settings from file over the top of the defaults
         stream = open(settingsfile, 'r')
-        settings = yaml.load(stream)
-        ctx.params.update({k: v for k, v in settings.iteritems() if v})
+        file_settings = yaml.load(stream)
+        context.settings.update({k: v for k, v in file_settings.iteritems() if v})
     except IOError:
         pass
 
+    # command line options override defaults and settings file
+    args = {
+        'settingsfile': settingsfile,
+        'url': url,
+        'org': org,
+        'account': account,
+        'key': key,
+        'backupdir': backupdir
+    }
+    for arg, value in args.iteritems():
+        if value:
+            context.settings[arg] = value
+
 
 @click.command(short_help="status")
-@click.pass_context
-def status(ctx):
-    url = str(ctx.parent.params['url'])
-    org = str(ctx.parent.params['org'])
-    account = str(ctx.parent.params['account'])
-    key = str(ctx.parent.params['key'])
+def status():
+    click.echo('URL: %s/orgs/%s/accounts ' % (context.settings['url'], context.settings['org']))
+    click.echo('Organization: %s' % context.settings['org'])
+    click.echo('Account: %s' % context.settings['account'])
+    click.echo('Key: %s' % context.settings['key'])
 
-    click.echo('URL: %s/orgs/%s/accounts ' % (url, org))
-    click.echo('Organization: %s' % org)
-    click.echo('Account: %s' % account)
-    click.echo('Key: %s' % key)
-
-    resp = requests.get(url + '/orgs/' + org + '/accounts', headers={'Authorization': "Bearer " + key}).status_code
+    resp = requests.get(context.settings['url'] + '/orgs/' + context.settings['org'] + '/accounts',
+                        headers={'Authorization': "Bearer " + context.settings['key']}).status_code
     if resp == 200:
         click.echo('Authenticated: %s' % click.style('True', fg='green'))
     else:
-        click.echo('Authenticated: %s, Status Code: %s' % (click.style('False', fg='red'), click.style(str(resp), fg='red')))
+        click.echo('Authenticated: %s, Status Code: %s' % (click.style('False', fg='red'),
+                                                           click.style(str(resp), fg='red'))
+        )
 
 
 cli.add_command(status)

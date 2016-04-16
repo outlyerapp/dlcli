@@ -22,5 +22,3 @@ def token(ctx, name):
 
 
 create.add_command(token)
-
-

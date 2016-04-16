@@ -18,4 +18,5 @@ def search(ctx):
 def agent(ctx, agent):
     utils.search_agent(ctx, agent)
 
+
 search.add_command(agent)
