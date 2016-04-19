@@ -7,37 +7,32 @@ logger = logging.getLogger(__name__)
 
 
 @cli.group('set')
-@click.pass_context
-def set(ctx):
+def set():
     """sets things"""
 
 
 @click.command(short_help="Set url")
 @click.argument('url')
-@click.pass_context
-def url(ctx, url):
-    save_setting(ctx, {"url": str(url)})
+def url(url):
+    save_setting(setting={"url": str(url)}, **context.settings)
 
 
 @click.command(short_help="Set organization")
 @click.argument('org')
-@click.pass_context
-def org(ctx, org):
-    save_setting(ctx, {"org": str(org)})
+def org(org):
+    save_setting(setting={"org": str(org)}, **context.settings)
 
 
 @click.command(short_help="Set account")
 @click.argument('account')
-@click.pass_context
-def account(ctx, account):
-    save_setting(ctx, {"account": str(account)})
+def account(account):
+    save_setting(setting={"account": str(account)}, **context.settings)
 
 
 @click.command(short_help="Set key")
 @click.argument('key')
-@click.pass_context
-def key(ctx, key):
-    save_setting(ctx, {"key": str(key)})
+def key(key):
+    save_setting(setting={"key": str(key)}, **context.settings)
 
 
 set.add_command(url)

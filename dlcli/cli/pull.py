@@ -1,36 +1,36 @@
 from ..cli import *
-from ..api import *
 import click
 import logging
+
+from ..api import dashboards as dashboards_api
+from ..api import plugins as plugins_api
+from ..api import rules as rules_api
+
 
 logger = logging.getLogger(__name__)
 
 
 @cli.group('pull')
-@click.pass_context
-def pull(ctx):
+def pull():
     """pulls things down from dataloop"""
 
 
 @click.command(short_help="Pull a dashboard")
 @click.argument('dashboard')
-@click.pass_context
-def dashboard(ctx, dashboard):
-    print Dashboards(ctx).export_dashboard(dashboard)
+def dashboard(dashboard):
+    print dashboards_api.export_dashboard(dashboard=dashboard, **context.settings)
 
 
 @click.command(short_help="Pull a plugin")
 @click.argument('plugin')
-@click.pass_context
-def plugin(ctx, plugin):
-    print Plugins(ctx).export_plugin(plugin)
+def plugin(plugin):
+    print plugins_api.export_plugin(plugin=plugin, **context.settings)
 
 
 @click.command(short_help="Pull a rule")
 @click.argument('rule')
-@click.pass_context
-def rule(ctx, rule):
-    print Rules(ctx).export_rule(rule)
+def rule(rule):
+    print rules_api.export_rule(rule=rule, **context.settings)
 
 
 pull.add_command(dashboard)

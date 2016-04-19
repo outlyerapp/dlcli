@@ -1,36 +1,35 @@
 from ..cli import *
-from ..api import *
 import click
 import logging
+
+from ..api import dashboards as dashboards_api
+from ..api import plugins as plugins_api
+from ..api import rules as rules_api
 
 logger = logging.getLogger(__name__)
 
 
 @cli.group('push')
-@click.pass_context
-def push(ctx):
+def push():
     """pushes things up to dataloop"""
 
 
 @click.command(short_help="Push a dashboard")
 @click.argument('dashboard')
-@click.pass_context
-def dashboard(ctx, dashboard):
-    Dashboards(ctx).import_dashboard(dashboard)
+def dashboard(dashboard):
+    dashboards_api.import_dashboard(file_path=dashboard, **context.settings)
 
 
 @click.command(short_help="Push a plugin")
 @click.argument('plugin')
-@click.pass_context
-def plugin(ctx, plugin):
-    Plugins(ctx).import_plugin(plugin)
+def plugin(plugin):
+    plugins_api.import_plugin(plugin_path=plugin, **context.settings)
 
 
 @click.command(short_help="Push a rule")
 @click.argument('rule')
-@click.pass_context
-def rule(ctx, rule):
-    Rules(ctx).import_rule(rule)
+def rule(rule):
+    rules_api.import_rule(rule_path=rule, **context.settings)
 
 
 push.add_command(dashboard)

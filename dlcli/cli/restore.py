@@ -7,23 +7,22 @@ logger = logging.getLogger(__name__)
 
 
 @cli.group('restore')
-@click.pass_context
-def restore(ctx):
+def restore():
     """restores backups"""
 
 
 @click.command(short_help="Restore an Account")
 @click.argument('account')
-@click.pass_context
-def account(ctx, account):
-    utils.restore_account(ctx, account)
+def account(account):
+    context.settings['account'] = account
+    utils.restore_account(**context.settings)
 
 
 @click.command(short_help="Restore an Organization")
 @click.argument('org')
-@click.pass_context
-def org(ctx, org):
-    utils.restore_org(ctx, org)
+def org(org):
+    context.settings['org'] = org
+    utils.restore_org(**context.settings)
 
 
 restore.add_command(account)
