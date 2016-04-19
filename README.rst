@@ -115,6 +115,6 @@ You can use the API code outside of the command line utility.
         'key': 'api_key,
     }
     
-    ping api.agents.get_agents(**settings)
+    print api.agents.get_agents(**settings)
     
 Where org_name, account_name and api_key need to be updated with your personal settings.
