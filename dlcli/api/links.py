@@ -15,21 +15,21 @@ def get_links(url='', org='', account='', key='', **kwargs):
         headers={'Authorization': "Bearer " + key}).json()
 
 
-def delete_link(url='', org='', account='', key='', link_id='', **kwargs):
+def delete_link(url='', org='', account='', key='', link='', **kwargs):
     return requests.delete(
         utils.build_api_url(url,
                             org,
                             account,
-                            endpoint='links') + '/' + link_id,
+                            endpoint='links') + '/' + link,
         headers={'Authorization': "Bearer " + key})
 
 
-def export_link(url='', org='', account='', key='', link_id='', **kwargs):
+def export_link(url='', org='', account='', key='', link='', **kwargs):
     return requests.get(
         utils.build_api_url(url,
                             org,
                             account,
-                            endpoint='links') + '/' + link_id,
+                            endpoint='links') + '/' + link,
         headers={'Authorization': "Bearer " + key}).json()
 
 

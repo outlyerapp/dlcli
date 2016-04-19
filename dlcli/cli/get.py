@@ -83,10 +83,10 @@ def rules():
 @click.command(short_help="Get criterias")
 def criterias():
     for r in rules_api.get_rules(**context.settings):
-        for criteria in rules_api.get_criteria(rule_name=r['name'], **context.settings):
+        for criteria in rules_api.get_criteria(rule=r['name'], **context.settings):
             if criteria['condition']['threshold']:
                 criteria_type = criteria['scopes'][0]['type']
-                if criteria_type == 'tag':
+                if criteria_type == 'tag' or criteria_type == 'agent':
                     scope_key = 'id'
                 else:
                     scope_key = 'name'
@@ -98,49 +98,7 @@ def criterias():
                     criteria['condition']['timeout'])
             else:
                 criteria_type = criteria['scopes'][0]['type']
-                if criteria_type == 'tag':
-                    scope_key = 'id'
-                else:
-                    scope_key = 'name'
-                message = 'on %s %s for %d seconds' % (
-                    criteria['scopes'][0]['type'],
-                    criteria['scopes'][0][scope_key],
-                    criteria['condition']['timeout'])
-
-            if criteria['state'] == 'hit':
-                agent_names = []
-                triggered_by = criteria['triggered_by']
-                for agent_id in triggered_by:
-                    agent_names.append(agents_api.get_agent_name_from_id(agent_id))
-                click.echo(click.style('%s %s %s triggered by %s',
-                                       fg='red') %
-                           (r['name'], criteria['metric'], message,
-                            ','.join(map(str, agent_names))))
-            else:
-                click.echo(click.style('%s %s %s',
-                                       fg='green') %
-                           (r['name'], criteria['metric'], message))
-
-
-@click.command(short_help="Get alerts")
-def alerts():
-    for r in rules_api.get_rules(**context.settings):
-        for criteria in rules_api.get_criteria(rule_name=r['name'], **context.settings):
-            if criteria['condition']['threshold']:
-                criteria_type = criteria['scopes'][0]['type']
-                if criteria_type == 'tag':
-                    scope_key = 'id'
-                else:
-                    scope_key = 'name'
-                message = "on %s %s %s %d for %d seconds" % (
-                    criteria['scopes'][0]['type'],
-                    criteria['scopes'][0][scope_key],
-                    criteria['condition']['operator'],
-                    criteria['condition']['threshold'],
-                    criteria['condition']['timeout'])
-            else:
-                criteria_type = criteria['scopes'][0]['type']
-                if criteria_type == 'tag':
+                if criteria_type == 'tag' or criteria_type == 'agent':
                     scope_key = 'id'
                 else:
                     scope_key = 'name'
@@ -158,7 +116,55 @@ def alerts():
                                        fg='red') %
                            (r['name'], criteria['metric'], message,
                             ','.join(map(str, agent_names))))
+            else:
+                click.echo(click.style('%s %s %s',
+                                       fg='green') %
+                           (r['name'], criteria['metric'], message))
 
+
+@click.command(short_help="Get alerts")
+def alerts():
+    triggered = False
+    for r in rules_api.get_rules(**context.settings):
+        for criteria in rules_api.get_criteria(rule=r['name'], **context.settings):
+            if criteria['condition']['threshold']:
+                criteria_type = criteria['scopes'][0]['type']
+                if criteria_type == 'tag' or criteria_type == 'agent':
+                    scope_key = 'id'
+                else:
+                    scope_key = 'name'
+                message = "on %s %s %s %d for %d seconds" % (
+                    criteria['scopes'][0]['type'],
+                    criteria['scopes'][0][scope_key],
+                    criteria['condition']['operator'],
+                    criteria['condition']['threshold'],
+                    criteria['condition']['timeout'])
+            else:
+                criteria_type = criteria['scopes'][0]['type']
+                if criteria_type == 'tag' or criteria_type == 'agent':
+                    scope_key = 'id'
+                else:
+                    scope_key = 'name'
+                message = 'on %s %s for %d seconds' % (
+                    criteria['scopes'][0]['type'],
+                    criteria['scopes'][0][scope_key],
+                    criteria['condition']['timeout'])
+
+            if criteria['state'] == 'hit':
+                triggered = True
+                agent_names = []
+                triggered_by = criteria['triggered_by']
+                for agent_id in triggered_by:
+                    agent_names.append(agents_api.get_agent_name_from_id(agent_id=agent_id, **context.settings))
+                click.echo(click.style('%s %s %s triggered by %s',
+                                       fg='red') %
+                           (r['name'], criteria['metric'], message,
+                            ','.join(map(str, agent_names))))
+    if not triggered:
+        print "all clear! no alert rule criteria are triggered"
+        sys.exit(0)
+    else:
+        sys.exit(2)
 
 @click.command(short_help="Get tags")
 def tags():
@@ -204,7 +210,7 @@ def series(metric, agent, tag, resolution, period, lastvalue):
         for a in agent_details:
             if a['name'] == agent:
                 agent_id = a['id']
-        for s in series_api.get_agent_series(agent_id, metric, resolution, period, **context.settings):
+        for s in series_api.get_agent_series(agent_id=agent_id, metric=metric, resolution=resolution, period=period, **context.settings):
             points = []
             for point in s['points']:
                 if point['type'] == 'boolean':
@@ -219,7 +225,7 @@ def series(metric, agent, tag, resolution, period, lastvalue):
             else:
                 print ','.join(map(str, points))
     if tag:
-        for s in series_api.get_tag_series(tag, metric, resolution, period, **context.settings):
+        for s in series_api.get_tag_series(tag=tag, metric=metric, resolution=resolution, period=period, **context.settings):
             points = []
             click.echo(click.style(s['source']['name'], fg='green'))
             for point in s['points']:

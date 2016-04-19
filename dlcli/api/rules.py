@@ -15,30 +15,30 @@ def get_rules(url='', org='', account='', key='', **kwargs):
         headers={'Authorization': "Bearer " + key}).json()
 
 
-def get_criteria(url='', org='', account='', key='', rule_id='', **kwargs):
+def get_criteria(url='', org='', account='', key='', rule='', **kwargs):
     return requests.get(
         utils.build_api_url(url,
                             org,
                             account,
-                            endpoint='rules' + '/' + rule_id + '/criteria'),
+                            endpoint='rules' + '/' + rule + '/criteria'),
         headers={'Authorization': "Bearer " + key}).json()
 
 
-def export_rule(url='', org='', account='', key='', rule_id='', **kwargs):
+def export_rule(url='', org='', account='', key='', rule='', **kwargs):
     return requests.get(
         utils.build_api_url(url,
                             org,
                             account,
-                            endpoint='rules') + '/' + rule_id,
+                            endpoint='rules') + '/' + rule,
         headers={'Authorization': "Bearer " + key, "Accept": "application/yaml"}).content
 
 
-def delete_rule(url='', org='', account='', key='', rule_id='', **kwargs):
+def delete_rule(url='', org='', account='', key='', rule='', **kwargs):
     return requests.delete(
         utils.build_api_url(url,
                             org,
                             account,
-                            endpoint='rules') + '/' + rule_id,
+                            endpoint='rules') + '/' + rule,
         headers={'Authorization': "Bearer " + key})
 
 

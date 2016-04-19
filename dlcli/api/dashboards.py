@@ -15,12 +15,12 @@ def get_dashboards(url='', org='', account='', key='', **kwargs):
         headers={'Authorization': "Bearer " + key}).json()
 
 
-def export_dashboard(url='', org='', account='', key='', dashboard_name='', **kwargs):
+def export_dashboard(url='', org='', account='', key='', dashboard='', **kwargs):
     return requests.get(
         utils.build_api_url(url,
                             org,
                             account,
-                            endpoint='dashboards') + '/' + dashboard_name,
+                            endpoint='dashboards') + '/' + dashboard,
         headers={'Authorization': "Bearer " + key, "Accept": "application/yaml"}).content
 
 
@@ -36,10 +36,10 @@ def import_dashboard(url='', org='', account='', key='', file_path='', **kwargs)
         data=dashboard_yaml)
 
 
-def delete_dashboard(url='', org='', account='', key='', dashboard_name='', **kwargs):
+def delete_dashboard(url='', org='', account='', key='', dashboard='', **kwargs):
     return requests.delete(
         utils.build_api_url(url,
                             org,
                             account,
-                            endpoint='dashboards') + '/' + dashboard_name,
+                            endpoint='dashboards') + '/' + dashboard,
         headers={'Authorization': "Bearer " + key})

@@ -14,7 +14,7 @@ def set_meta(meta):
     return hook
 
 
-def run_local(url='', org='', account='', key='', plugin_path='', agent_list='', **kwargs ):
+def run_local(url='', org='', account='', key='', plugin_path='', agent_list='', **kwargs):
     plugin_name = os.path.splitext(os.path.basename(plugin_path))
     plugin_content = utils.read_file_content(plugin_path)
     requests = (grequests.post(

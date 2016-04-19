@@ -1,22 +1,21 @@
 from ..cli import *
-from ..api import *
 import click
 import logging
 import uuid
+
+from ..api import agents as agents_api
 
 logger = logging.getLogger(__name__)
 
 
 @cli.group('source')
-@click.pass_context
-def source(ctx):
+def source():
     """work with sources"""
 
 
 @click.command(short_help="Register source")
 @click.argument('name')
-@click.pass_context
-def register(ctx, name):
+def register(name):
     finger = uuid.uuid4()
     payload = {
         'mac': '',
@@ -29,14 +28,13 @@ def register(ctx, name):
         'mode': 'SOLO',
         'name': name
     }
-    print Agents(ctx).register_agent(payload, finger)
+    print agents_api.register_agent(payload=payload, finger=finger, **context.settings)
 
 
 @click.command(short_help="Ping source")
 @click.argument('name')
 @click.argument('fingerprint')
-@click.pass_context
-def ping(ctx, name, fingerprint):
+def ping(name, fingerprint):
     payload = {
         'mac': '',
         'hostname': name,
@@ -48,7 +46,7 @@ def ping(ctx, name, fingerprint):
         'mode': 'SOLO',
         'name': name
     }
-    print Agents(ctx).ping_agent(payload, fingerprint)
+    print agents_api.ping_agent(payload=payload, finger=fingerprint, **context.settings)
 
 
 source.add_command(register)

@@ -46,7 +46,7 @@ def print_run_table(table_data):
     print table.table
 
 
-def save_setting(setting, settings_file):
+def save_setting(setting='', settings_file='', **kwargs):
     try:
         stream = open(settings_file, 'r')
         data = yaml.load(stream)
@@ -79,7 +79,7 @@ def create_dir(path, directory):
     return new_directory
 
 
-def backup_account(url, key, org, account, backupdir):
+def backup_account(url='', org='', key='', account='', backupdir='', **kwargs):
     #  create directory structure
     backup_dir = create_dir(os.getcwd(), backupdir)
     org_dir = create_dir(backup_dir, org)
@@ -87,12 +87,12 @@ def backup_account(url, key, org, account, backupdir):
 
     # backup agents
     agent_dir = create_dir(account_dir, 'agents')
-    for agent_json in agents.get_agents(url, key, org, account):
+    for agent_json in agents.get_agents(url=url, org=org, account=account, key=key):
         agent_path = os.path.join(agent_dir, str(agent_json['name']) + '.json')
         remove_keys = ['presence_state', 'created', 'modified', 'heartbeat']
-        for key in remove_keys:
-            if key in agent_json:
-                del agent_json[key]
+        for k in remove_keys:
+            if k in agent_json:
+                del agent_json[k]
         with open(agent_path, 'w') as f:
             f.write(json.dumps(agent_json, indent=4))
 
@@ -137,9 +137,9 @@ def backup_account(url, key, org, account, backupdir):
             f.write(json.dumps(link_json, indent=4))
 
 
-def backup_org(url, key, org, backupdir):
+def backup_org(url='', org='', key='', backupdir='', **kwargs):
     for a in accounts.get_accounts(url=url, org=org, key=key):
-        backup_account(url, key, org, a['name'], backupdir)
+        backup_account(url=url, key=key, org=org, account=a['name'], backupdir=backupdir)
 
 
 def read_file_content(file_path):
@@ -151,7 +151,7 @@ def read_file_content(file_path):
             raise
 
 
-def restore_account(url, key, org, account, backupdir):
+def restore_account(url='', key='', org='', account='', backupdir='', **kwargs):
 
     agents_dir = os.path.join(backupdir, org, account, 'agents')
     dashboards_dir = os.path.join(backupdir, org, account, 'dashboards')
@@ -197,7 +197,7 @@ def restore_account(url, key, org, account, backupdir):
         links.import_link(link_path)
 
 
-def restore_org(url, key, org, backupdir):
+def restore_org(url='', key='', org='', backupdir='', **kwargs):
     for a in accounts.get_accounts():
         restore_account(url, key, org, a['name'], backupdir)
 
@@ -216,15 +216,12 @@ def agent_status_check(agent, status):
             click.echo(click.style(agent['name'], fg='red'))
 
 
-def search_agent(ctx, agent):
-    org_list = orgs.get_orgs()
-    for _org in org_list:
-        ctx.parent.parent.params['org'] = _org['name']
-        account_list = accounts.get_accounts()
-        for _account in account_list:
-            ctx.parent.parent.params['account'] = _account['name']
-            agent_list = agents.get_agents()
-            for _agent in agent_list:
-                if _agent['name'] == agent:
-                    click.echo('Organization: ' + _org['name'] + ' Account: ' +
-                               _account['name'] + ' Agent: ' + _agent['name'])
+def search_agent(url='', key='', org='', account='', agent='', **kwargs):
+    org_list = orgs.get_orgs(url=url, org=org, account=account, key=key)
+    for o in org_list:
+        account_list = accounts.get_accounts(url=url, org=o['name'], key=key)
+        for acc in account_list:
+            agent_list = agents.get_agents(url=url, org=org, account=acc['name'], key=key)
+            for ag in agent_list:
+                if ag['name'] == agent:
+                    click.echo('Organization: ' + o['name'] + ' Account: ' + acc['name'] + ' Agent: ' + ag['name'])

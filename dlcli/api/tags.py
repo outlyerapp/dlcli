@@ -14,10 +14,10 @@ def get_tags(url='', org='', account='', key='', **kwargs):
         headers={'Authorization': "Bearer " + key}).json()
 
 
-def delete_tag(url='', org='', account='', key='', tag_name='', **kwargs):
+def delete_tag(url='', org='', account='', key='', tag='', **kwargs):
     return requests.delete(
         utils.build_api_url(url,
                             org,
                             account,
-                            endpoint='tags') + '/' + tag_name,
+                            endpoint='tags') + '/' + tag,
         headers={'Authorization': "Bearer " + key})

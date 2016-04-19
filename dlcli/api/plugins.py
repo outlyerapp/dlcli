@@ -16,12 +16,12 @@ def get_plugins(url='', org='', account='', key='', **kwargs):
         headers={'Authorization': "Bearer " + key}).json()
 
 
-def export_plugin(url='', org='', account='', key='', plugin_name='', **kwargs):
+def export_plugin(url='', org='', account='', key='', plugin='', **kwargs):
     resp = requests.get(
         utils.build_api_url(url,
                             org,
                             account,
-                            endpoint='plugins') + '/' + plugin_name,
+                            endpoint='plugins') + '/' + plugin,
         headers={'Authorization': "Bearer " + key}).json()
     return base64.b64decode(resp['content'])
 
@@ -45,20 +45,13 @@ def import_plugin(url='', org='', account='', key='', plugin_path='', **kwargs):
         data=payload)
 
     if resp.status_code == 422:
-        resp = requests.patch(
-            utils.build_api_url(url,
-                                org,
-                                account,
-                                endpoint='plugins' + '/' + plugin_name),
-            headers={'Authorization': "Bearer " + key},
-            data=payload)
+        resp = requests.patch(utils.build_api_url(url, org, account, endpoint='plugins' + '/' + plugin_name),
+                              headers={'Authorization': "Bearer " + key},
+                              data=payload)
     return resp
 
 
 def delete_plugin(url='', org='', account='', key='', plugin_name='', **kwargs ):
     return requests.delete(
-        utils.build_api_url(url,
-                            org,
-                            account,
-                            endpoint='plugins' + '/' + plugin_name),
+        utils.build_api_url(url, org, account, endpoint='plugins' + '/' + plugin_name),
         headers={'Authorization': "Bearer " + key})
