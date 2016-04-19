@@ -98,3 +98,23 @@ The top-level help output looks like this:
 
 
 Note that all available flags and commands for this level are shown. This pattern is repeated at each successive level of ``--help``
+
+`Using the API outside of dlcli`_
+----------------------------
+
+You can use the API code outside of the command line utility.
+
+.. code-block:: python
+
+    from dlcli import api
+    
+    settings = {
+        'url': 'https://app.dataloop.io/api/v1',
+        'org': 'org_name',
+        'account': 'account_name',
+        'key': 'api_key,
+    }
+    
+    ping api.agents.get_agents(**settings)
+    
+Where org_name, account_name and api_key need to be updated with your personal settings.
