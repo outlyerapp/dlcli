@@ -11,3 +11,4 @@ from .create import *
 from .search import *
 from .source import *
 from .graph import *
+from .screensaver import *
