@@ -11,14 +11,10 @@ screens = [
     'clock',
     'jokes4all',
     'matrix',
-    'programmer',
     'quotes4all',
     'randtxt',
     'rfc',
-    'rssfeed',
     'starwars',
-    'sysmon',
-    'urlfetcher'
     ]
 
 @cli.command('screensaver')
