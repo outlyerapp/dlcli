@@ -24,7 +24,7 @@ def get_version():
     return VERSION
 
 
-dependencies = ['click', 'requests', 'pyyaml', 'terminaltables', 'termcolor', 'grequests', 'pysparkline']
+dependencies = ['click', 'requests', 'pyyaml', 'terminaltables', 'termcolor', 'grequests', 'pysparklines']
 
 setup(
     name='dlcli',
