@@ -84,27 +84,28 @@ def rules():
 def criterias():
     for r in rules_api.get_rules(**context.settings):
         for criteria in rules_api.get_criteria(rule=r['name'], **context.settings):
+            on = 'unknown'
             if criteria['condition']['threshold']:
                 criteria_type = criteria['scopes'][0]['type']
-                if criteria_type == 'tag' or criteria_type == 'agent':
-                    scope_key = 'id'
-                else:
-                    scope_key = 'name'
+                if criteria_type == 'tag':
+                    on = criteria['scopes'][0]['id']
+                if criteria_type == 'agent':
+                    on = agents_api.get_agent_name_from_id(agent_id=criteria['scopes'][0]['id'], **context.settings)
                 message = "on %s %s %s %d for %d seconds" % (
                     criteria['scopes'][0]['type'],
-                    criteria['scopes'][0][scope_key],
+                    on,
                     criteria['condition']['operator'],
                     criteria['condition']['threshold'],
                     criteria['condition']['timeout'])
             else:
                 criteria_type = criteria['scopes'][0]['type']
-                if criteria_type == 'tag' or criteria_type == 'agent':
-                    scope_key = 'id'
-                else:
-                    scope_key = 'name'
+                if criteria_type == 'tag':
+                    on = criteria['scopes'][0]['id']
+                if criteria_type == 'agent':
+                    on = agents_api.get_agent_name_from_id(agent_id=criteria['scopes'][0]['id'], **context.settings)
                 message = 'on %s %s for %d seconds' % (
                     criteria['scopes'][0]['type'],
-                    criteria['scopes'][0][scope_key],
+                    on,
                     criteria['condition']['timeout'])
 
             if criteria['state'] == 'hit':
@@ -112,14 +113,11 @@ def criterias():
                 triggered_by = criteria['triggered_by']
                 for agent_id in triggered_by:
                     agent_names.append(agents_api.get_agent_name_from_id(agent_id=agent_id, **context.settings))
-                click.echo(click.style('%s %s %s triggered by %s',
-                                       fg='red') %
-                           (r['name'], criteria['metric'], message,
-                            ','.join(map(str, agent_names))))
+                click.echo(
+                    click.style('%s %s %s triggered by %s', fg='red') % (r['name'], criteria['metric'], message, ','.join(map(str, agent_names)))
+                )
             else:
-                click.echo(click.style('%s %s %s',
-                                       fg='green') %
-                           (r['name'], criteria['metric'], message))
+                click.echo(click.style('%s %s %s', fg='green') % (r['name'], criteria['metric'], message))
 
 
 @click.command(short_help="Get alerts")
