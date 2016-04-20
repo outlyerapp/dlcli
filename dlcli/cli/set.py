@@ -14,25 +14,25 @@ def set():
 @click.command(short_help="Set url")
 @click.argument('url')
 def url(url):
-    save_setting(setting={"url": str(url)}, **context.settings)
+    save_setting(setting='url', value=url, settingsfile=context.settings['settingsfile'])
 
 
 @click.command(short_help="Set organization")
 @click.argument('org')
 def org(org):
-    save_setting(setting={"org": str(org)}, **context.settings)
+    save_setting(setting='org', value=org, settingsfile=context.settings['settingsfile'])
 
 
 @click.command(short_help="Set account")
 @click.argument('account')
 def account(account):
-    save_setting(setting={"account": str(account)}, **context.settings)
+    save_setting(setting='account', value=account, settingsfile=context.settings['settingsfile'])
 
 
 @click.command(short_help="Set key")
 @click.argument('key')
 def key(key):
-    save_setting(setting={"key": str(key)}, **context.settings)
+    save_setting(setting='key', value=key, settingsfile=context.settings['settingsfile'])
 
 
 set.add_command(url)

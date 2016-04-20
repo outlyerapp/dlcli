@@ -46,17 +46,15 @@ def print_run_table(table_data):
     print table.table
 
 
-def save_setting(setting='', settings_file='', **kwargs):
+def save_setting(setting='', value='', settingsfile=''):
     try:
-        stream = open(settings_file, 'r')
+        stream = open(settingsfile, 'r')
         data = yaml.load(stream)
     except IOError:
         data = {}
-    data.update({k: v for k, v in setting.iteritems() if v})
-    with open(settings_file, 'w') as yaml_file:
-        yaml_file.write(yaml.safe_dump(data,
-                                       default_flow_style=False,
-                                       explicit_start=True))
+    data[setting] = value
+    with open(settingsfile, 'w') as yaml_file:
+        yaml_file.write(yaml.safe_dump(data, default_flow_style=False, explicit_start=True))
 
 
 def build_api_url(url,
