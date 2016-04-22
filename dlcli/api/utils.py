@@ -1,5 +1,4 @@
 import os
-import sys
 import glob
 import logging
 import yaml
@@ -12,6 +11,7 @@ import rules
 import links
 import orgs
 import click
+import errno
 from terminaltables import SingleTable
 from termcolor import colored
 
@@ -224,3 +224,25 @@ def search_agent(url='', key='', org='', account='', agent='', **kwargs):
             for ag in agent_list:
                 if ag['name'] == agent:
                     click.echo('Organization: ' + o['name'] + ' Account: ' + acc['name'] + ' Agent: ' + ag['name'])
+
+def make_node(node):
+    try:
+        os.makedirs(node)
+    except OSError, e:
+        if e.errno != errno.EEXIST:
+            raise
+
+
+def create_node(f, times=None):
+    with open(f, 'a'):
+        os.utime(f, times)
+
+
+def create_tree(h, c):
+    for dir, files in c.iteritems():
+        parent = os.path.join(h, dir)
+        make_node(parent)
+        children = c[dir]
+        for child in children:
+            child = os.path.join(parent, child)
+            create_node(child)

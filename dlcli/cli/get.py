@@ -8,6 +8,7 @@ from ..api import agents as agents_api
 from ..api import dashboards as dashboards_api
 from ..api import links as links_api
 from ..api import orgs as orgs_api
+from ..api import packs as packs_api
 from ..api import plugins as plugins_api
 from ..api import rules as rules_api
 from ..api import tags as tags_api
@@ -299,12 +300,23 @@ def user(tokens):
         print 'Get user failed. %s' % e
         sys.exit(1)
 
+@click.command(short_help="Get pack")
+def packs():
+    try:
+        for p in packs_api.get_packs(**context.settings):
+            click.echo(p['name'])
+    except Exception, e:
+        print 'Get packs failed. %s' % e
+        sys.exit(1)
+
+
 get.add_command(accounts)
 get.add_command(agents)
 get.add_command(agent)
 get.add_command(dashboards)
 get.add_command(links)
 get.add_command(orgs)
+get.add_command(packs)
 get.add_command(plugins)
 get.add_command(criterias)
 get.add_command(rules)
