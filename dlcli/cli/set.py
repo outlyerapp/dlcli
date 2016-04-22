@@ -1,5 +1,6 @@
 from ..cli import *
 from ..api import *
+import sys
 import click
 import logging
 
@@ -14,26 +15,38 @@ def set():
 @click.command(short_help="Set url")
 @click.argument('url')
 def url(url):
-    save_setting(setting='url', value=url, settingsfile=context.settings['settingsfile'])
-
+    try:
+        save_setting(setting='url', value=url, settingsfile=context.settings['settingsfile'])
+    except Exception, e:
+        print 'Save url failed. %s' % e
+        sys.exit(1)
 
 @click.command(short_help="Set organization")
 @click.argument('org')
 def org(org):
-    save_setting(setting='org', value=org, settingsfile=context.settings['settingsfile'])
-
+    try:
+        save_setting(setting='org', value=org, settingsfile=context.settings['settingsfile'])
+    except Exception, e:
+        print 'Save org failed. %s' % e
+        sys.exit(1)
 
 @click.command(short_help="Set account")
 @click.argument('account')
 def account(account):
-    save_setting(setting='account', value=account, settingsfile=context.settings['settingsfile'])
-
+    try:
+        save_setting(setting='account', value=account, settingsfile=context.settings['settingsfile'])
+    except Exception, e:
+        print 'Save account failed. %s' % e
+        sys.exit(1)
 
 @click.command(short_help="Set key")
 @click.argument('key')
 def key(key):
-    save_setting(setting='key', value=key, settingsfile=context.settings['settingsfile'])
-
+    try:
+        save_setting(setting='key', value=key, settingsfile=context.settings['settingsfile'])
+    except Exception, e:
+        print 'Save key failed. %s' % e
+        sys.exit(1)
 
 set.add_command(url)
 set.add_command(org)

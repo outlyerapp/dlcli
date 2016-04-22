@@ -88,19 +88,22 @@ def cli(settingsfile, url, org, account, key, backupdir, loglevel, debug):
 
 @click.command(short_help="status")
 def status():
-    click.echo('URL: %s/orgs/%s/accounts ' % (context.settings['url'], context.settings['org']))
-    click.echo('Organization: %s' % context.settings['org'])
-    click.echo('Account: %s' % context.settings['account'])
-    click.echo('Key: %s' % context.settings['key'])
 
-    resp = requests.get(context.settings['url'] + '/orgs/' + context.settings['org'] + '/accounts',
-                        headers={'Authorization': "Bearer " + context.settings['key']}).status_code
+    url = context.settings['url']
+    org = context.settings['org']
+    account = context.settings['account']
+    key = context.settings['key']
+
+    click.echo('URL: %s/orgs/%s/accounts ' % (url, org))
+    click.echo('Organization: %s' % org)
+    click.echo('Account: %s' % account)
+    click.echo('Key: %s' % key)
+
+    resp = requests.get(url + '/orgs/' + org + '/accounts/' + account, headers={'Authorization': "Bearer " + key}).status_code
     if resp == 200:
         click.echo('Authenticated: %s' % click.style('True', fg='green'))
     else:
-        click.echo('Authenticated: %s, Status Code: %s' % (click.style('False', fg='red'),
-                                                           click.style(str(resp), fg='red'))
-        )
+        click.echo('Authenticated: %s, Status Code: %s' % (click.style('False', fg='red'), click.style(str(resp), fg='red')))
 
 
 cli.add_command(status)

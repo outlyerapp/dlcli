@@ -1,5 +1,6 @@
 from ..cli import *
 import click
+import sys
 import logging
 import context
 
@@ -19,7 +20,8 @@ def token(name):
     try:
         print user_api.create_user_token(token_name=name, **context.settings)['token']
     except Exception, e:
-        print "token creation failed. is the name already taken?: %s" % e
+        print 'Create token failed. %s' % e
+        sys.exit(1)
 
 
 create.add_command(token)

@@ -1,4 +1,5 @@
 from ..cli import *
+import sys
 import click
 import logging
 import uuid
@@ -16,37 +17,44 @@ def source():
 @click.command(short_help="Register source")
 @click.argument('name')
 def register(name):
-    finger = uuid.uuid4()
-    payload = {
-        'mac': '',
-        'hostname': name,
-        'os_name': '',
-        'os_version': '',
-        'processes': [],
-        'container': '',
-        'interfaces': [],
-        'mode': 'SOLO',
-        'name': name
-    }
-    print agents_api.register_agent(payload=payload, finger=finger, **context.settings)
-
+    try:
+        finger = uuid.uuid4()
+        payload = {
+            'mac': '',
+            'hostname': name,
+            'os_name': '',
+            'os_version': '',
+            'processes': [],
+            'container': '',
+            'interfaces': [],
+            'mode': 'SOLO',
+            'name': name
+        }
+        print agents_api.register_agent(payload=payload, finger=finger, **context.settings)
+    except Exception, e:
+        print 'Register source failed. %s' % e
+        sys.exit(1)
 
 @click.command(short_help="Ping source")
 @click.argument('name')
 @click.argument('fingerprint')
 def ping(name, fingerprint):
-    payload = {
-        'mac': '',
-        'hostname': name,
-        'os_name': '',
-        'os_version': '',
-        'processes': [],
-        'container': '',
-        'interfaces': [],
-        'mode': 'SOLO',
-        'name': name
-    }
-    print agents_api.ping_agent(payload=payload, finger=fingerprint, **context.settings)
+    try:
+        payload = {
+            'mac': '',
+            'hostname': name,
+            'os_name': '',
+            'os_version': '',
+            'processes': [],
+            'container': '',
+            'interfaces': [],
+            'mode': 'SOLO',
+            'name': name
+        }
+        print agents_api.ping_agent(payload=payload, finger=fingerprint, **context.settings)
+    except Exception, e:
+        print 'Ping source failed. %s' % e
+        sys.exit(1)
 
 
 source.add_command(register)

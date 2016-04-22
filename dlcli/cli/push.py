@@ -1,4 +1,5 @@
 from ..cli import *
+import sys
 import click
 import logging
 
@@ -17,19 +18,31 @@ def push():
 @click.command(short_help="Push a dashboard")
 @click.argument('dashboard')
 def dashboard(dashboard):
-    dashboards_api.import_dashboard(file_path=dashboard, **context.settings)
+    try:
+        dashboards_api.import_dashboard(file_path=dashboard, **context.settings)
+    except Exception, e:
+        print 'Push dashboard failed. %s' % e
+        sys.exit(1)
 
 
 @click.command(short_help="Push a plugin")
 @click.argument('plugin')
 def plugin(plugin):
-    plugins_api.import_plugin(plugin_path=plugin, **context.settings)
+    try:
+        plugins_api.import_plugin(plugin_path=plugin, **context.settings)
+    except Exception, e:
+        print 'Push plugin failed. %s' % e
+        sys.exit(1)
 
 
 @click.command(short_help="Push a rule")
 @click.argument('rule')
 def rule(rule):
-    rules_api.import_rule(rule_path=rule, **context.settings)
+    try:
+        rules_api.import_rule(rule_path=rule, **context.settings)
+    except Exception, e:
+        print 'Push rule failed. %s' % e
+        sys.exit(1)
 
 
 push.add_command(dashboard)
