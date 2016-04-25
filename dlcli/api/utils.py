@@ -225,6 +225,18 @@ def search_agent(url='', key='', org='', account='', agent='', **kwargs):
                 if ag['name'] == agent:
                     click.echo('Organization: ' + o['name'] + ' Account: ' + acc['name'] + ' Agent: ' + ag['name'])
 
+
+def search_fingerprint(url='', key='', org='', account='', fingerprint='', **kwargs):
+    org_list = orgs.get_orgs(url=url, org=org, account=account, key=key)
+    for o in org_list:
+        account_list = accounts.get_accounts(url=url, org=o['name'], key=key)
+        for acc in account_list:
+            agent_list = agents.get_agents(url=url, org=org, account=acc['name'], key=key)
+            for ag in agent_list:
+                if ag['id'] == fingerprint:
+                    click.echo('Organization: ' + o['name'] + ' Account: ' + acc['name'] + ' Agent: ' + ag['name'])
+
+
 def make_node(node):
     try:
         os.makedirs(node)
