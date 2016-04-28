@@ -112,7 +112,7 @@ You can use the API code outside of the command line utility.
         'url': 'https://app.dataloop.io/api/v1',
         'org': 'org_name',
         'account': 'account_name',
-        'key': 'api_key,
+        'key': 'api_key',
     }
     
     print api.agents.get_agents(**settings)
