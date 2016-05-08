@@ -100,24 +100,22 @@ def backup_account(url='', org='', key='', account='', backupdir='', **kwargs):
     for d in dashboards.get_dashboards(url=url, org=org, account=account, key=key):
         dashboard_path = os.path.join(dashboard_dir, str(d['name']) + '.yaml')
         with open(dashboard_path, 'w') as f:
-            f.write(yaml.safe_dump(d,
-                                   default_flow_style=False,
-                                   explicit_start=True))
+            f.write(yaml.safe_dump(d, default_flow_style=False, explicit_start=True))
 
     # backup plugins
     plugin_dir = create_dir(account_dir, 'plugins')
     for p in plugins.get_plugins(url=url, org=org, account=account, key=key):
-        plugin_path = os.path.join(plugin_dir,
-                                   str(p['name']) + '.' + str(p['extension']))
+        plugin_path = os.path.join(plugin_dir, str(p['name']) + '.' + str(p['extension']))
         with open(plugin_path, 'w') as f:
-            f.write(plugins.export_plugin(plugin_name=p['name'], url=url, org=org, account=account, key=key))
+            f.write(plugins.export_plugin(plugin=p['name'], url=url, org=org, account=account, key=key))
+
 
     # backup rules
     rule_dir = create_dir(account_dir, 'rules')
     for r in rules.get_rules(url=url, org=org, account=account, key=key):
         rule_path = os.path.join(rule_dir, str(r['name']) + '.yaml')
         with open(rule_path, 'w') as f:
-            rule_content = yaml.safe_load(rules.export_rule(rule_id=r['id'], url=url, org=org, account=account, key=key))
+            rule_content = yaml.safe_load(rules.export_rule(rule=r['id'], url=url, org=org, account=account, key=key))
             if rule_content['actions']:
                 action_count = len(rule_content['actions'])
                 for i in range(action_count):
