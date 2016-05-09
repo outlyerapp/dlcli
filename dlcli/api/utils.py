@@ -26,7 +26,7 @@ def flatten(d, result=None):
         if isinstance(value, dict):
             value1 = {}
             for keyIn in value:
-                value1[".".join([key,keyIn])]=value[keyIn]
+                value1[".".join([key, keyIn])] = value[keyIn]
             flatten(value1, result)
         elif isinstance(value, (list, tuple)):
             for indexB, element in enumerate(value):
@@ -34,13 +34,13 @@ def flatten(d, result=None):
                     value1 = {}
                     index = 0
                     for keyIn in element:
-                        newkey = ".".join([key,keyIn])
-                        value1[".".join([key,keyIn])]=value[indexB][keyIn]
+                        newkey = ".".join([key, keyIn])
+                        value1[".".join([key, keyIn])] = value[indexB][keyIn]
                         index += 1
                     for keyA in value1:
                         flatten(value1, result)
         else:
-            result[key]=value
+            result[key] = value
     return result
 
 
@@ -271,9 +271,13 @@ def search_metadata(url='', key='', org='', account='', metadata='', **kwargs):
             for summary in agent_list:
                 agent_names.append(summary['name'])
             for agent in agent_names:
-                search_hash = flatten(agents.get_agent(url=url, org=org, account=acc['name'], key=key, agent_name=agent))
-                if metadata in search_hash.keys() or metadata in search_hash.values():
-                    click.echo('Organization: ' + o['name'] + ' Account: ' + acc['name'] + ' Agent: ' + agent)
+                try:
+                    search_hash = flatten(agents.get_agent(url=url, org=org, account=acc['name'], key=key, agent_name=agent))
+                    if metadata in search_hash.keys() or metadata in search_hash.values():
+                        click.echo('Organization: ' + o['name'] + ' Account: ' + acc['name'] + ' Agent: ' + agent)
+                except:
+                    continue
+
 
 
 def make_node(node):
