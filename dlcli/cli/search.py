@@ -32,5 +32,16 @@ def fingerprint(fingerprint):
         sys.exit(1)
 
 
+@click.command(short_help="Search for an Agent metadata")
+@click.argument('metadata')
+def metadata(metadata):
+    try:
+        utils.search_metadata(metadata=metadata, **context.settings)
+    except Exception, e:
+        print 'Search agent metadata failed. %s' % e
+        sys.exit(1)
+
+
 search.add_command(agent)
 search.add_command(fingerprint)
+search.add_command(metadata)

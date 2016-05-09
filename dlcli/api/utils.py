@@ -18,6 +18,32 @@ from termcolor import colored
 logger = logging.getLogger(__name__)
 
 
+def flatten(d, result=None):
+    if result is None:
+        result = {}
+    for key in d:
+        value = d[key]
+        if isinstance(value, dict):
+            value1 = {}
+            for keyIn in value:
+                value1[".".join([key,keyIn])]=value[keyIn]
+            flatten(value1, result)
+        elif isinstance(value, (list, tuple)):
+            for indexB, element in enumerate(value):
+                if isinstance(element, dict):
+                    value1 = {}
+                    index = 0
+                    for keyIn in element:
+                        newkey = ".".join([key,keyIn])
+                        value1[".".join([key,keyIn])]=value[indexB][keyIn]
+                        index += 1
+                    for keyA in value1:
+                        flatten(value1, result)
+        else:
+            result[key]=value
+    return result
+
+
 def print_command_output(command_data):
     for row in command_data:
         if row[1] == 0:
@@ -186,7 +212,7 @@ def restore_account(url='', key='', org='', account='', backupdir='', **kwargs):
     # restore rules
     rule_files = glob.glob(rules_dir + '/*.yaml')
     for rule_path in rule_files:
-         rules.import_rule(rule_path)
+        rules.import_rule(rule_path)
 
     # restore links
     link_files = glob.glob(links_dir + '/*.json')
@@ -233,6 +259,21 @@ def search_fingerprint(url='', key='', org='', account='', fingerprint='', **kwa
             for ag in agent_list:
                 if ag['id'] == fingerprint:
                     click.echo('Organization: ' + o['name'] + ' Account: ' + acc['name'] + ' Agent: ' + ag['name'])
+
+
+def search_metadata(url='', key='', org='', account='', metadata='', **kwargs):
+    agent_names = []
+    org_list = orgs.get_orgs(url=url, org=org, account=account, key=key)
+    for o in org_list:
+        account_list = accounts.get_accounts(url=url, org=o['name'], key=key)
+        for acc in account_list:
+            agent_list = agents.get_agents(url=url, org=org, account=acc['name'], key=key)
+            for summary in agent_list:
+                agent_names.append(summary['name'])
+            for agent in agent_names:
+                search_hash = flatten(agents.get_agent(url=url, org=org, account=acc['name'], key=key, agent_name=agent))
+                if metadata in search_hash.keys() or metadata in search_hash.values():
+                    click.echo('Organization: ' + o['name'] + ' Account: ' + acc['name'] + ' Agent: ' + agent)
 
 
 def make_node(node):
