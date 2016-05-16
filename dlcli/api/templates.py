@@ -23,3 +23,20 @@ def get_private_templates(url='', org='', account='', key='', **kwargs):
         headers={'Authorization': "Bearer " + key}).json()
 
 
+def create_template(url='', org='', account='', key='', name='', **kwargs):
+    return requests.post(
+        utils.build_api_url(url,
+                            org,
+                            account,
+                            endpoint='templates/private'),
+        data={"name": name},
+        headers={'Authorization': "Bearer " + key}).json()
+
+
+def delete_template(url='', org='', account='', key='', name='', **kwargs):
+    return requests.delete(
+        utils.build_api_url(url,
+                            org,
+                            account,
+                            endpoint='templates/private/%s' % name),
+        headers={'Authorization': "Bearer " + key})

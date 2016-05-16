@@ -11,6 +11,7 @@ from ..api import orgs as orgs_api
 from ..api import plugins as plugins_api
 from ..api import rules as rules_api
 from ..api import tags as tags_api
+from ..api import templates as templates_api
 from ..api import user as user_api
 
 logger = logging.getLogger(__name__)
@@ -154,7 +155,7 @@ def tag(tag):
 
 @click.command(short_help="rm token")
 @click.argument('name')
-def token(ctx, name):
+def token(name):
     try:
         resp = user_api.delete_user_token(token_name=name, **context.settings)
         if resp.status_code == 204:
@@ -168,6 +169,22 @@ def token(ctx, name):
         sys.exit(1)
 
 
+
+@click.command(short_help="rm template")
+@click.argument('name')
+def template(name):
+    try:
+        resp = templates_api.delete_template(name=name, **context.settings)
+        if resp.status_code == 204:
+            click.echo('Deleted template ' + name)
+        else:
+            click.echo('Error deleting ' + name + '. Status Code: ' + click.style(
+                str(resp.status_code),
+                fg='red'))
+    except Exception, e:
+        print 'Delete template failed. %s' % e
+        sys.exit(1)
+
 rm.add_command(account)
 rm.add_command(agent)
 rm.add_command(dashboard)
@@ -176,4 +193,5 @@ rm.add_command(org)
 rm.add_command(plugin)
 rm.add_command(rule)
 rm.add_command(tag)
+rm.add_command(template)
 rm.add_command(token)
