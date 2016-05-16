@@ -1,5 +1,6 @@
 from ..cli import *
 import sys
+import yaml
 import click
 import logging
 
@@ -330,6 +331,17 @@ def templates(type):
         print 'Get templates failed. %s' % e
         sys.exit(1)
 
+
+@click.command(short_help="Get template")
+@click.argument('name')
+def template(name):
+    try:
+        print yaml.safe_dump(templates_api.get_private_template(name=name, **context.settings), default_flow_style=False, explicit_start=True)
+    except Exception, e:
+        print 'Get template failed. %s' % e
+        sys.exit(1)
+
+
 get.add_command(accounts)
 get.add_command(agents)
 get.add_command(agent)
@@ -342,6 +354,7 @@ get.add_command(criterias)
 get.add_command(rules)
 get.add_command(alerts)
 get.add_command(tags)
+get.add_command(template)
 get.add_command(templates)
 get.add_command(metrics)
 get.add_command(series)
