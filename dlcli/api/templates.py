@@ -107,3 +107,13 @@ def put_rule(url='', org='', account='', key='', path='', name='', **kwargs):
                             endpoint='/templates/private/%s/rules' % rule_name),
         headers={'Authorization': "Bearer " + key, "Content-Type": "application/yaml"},
         data=rule_content)
+
+
+def install_template(url='', org='', account='', key='', name='', **kwargs):
+    return requests.post(
+        utils.build_api_url(url,
+                            org,
+                            account,
+                            endpoint='/packs'),
+        headers={'Authorization': "Bearer " + key},
+        data={"name": name, "force": True, "email": "", "repo": "private"})

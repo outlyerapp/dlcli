@@ -8,6 +8,7 @@ from ..api import agents as agents_api
 from ..api import dashboards as dashboards_api
 from ..api import links as links_api
 from ..api import orgs as orgs_api
+from ..api import packs as packs_api
 from ..api import plugins as plugins_api
 from ..api import rules as rules_api
 from ..api import tags as tags_api
@@ -169,6 +170,21 @@ def token(name):
         sys.exit(1)
 
 
+@click.command(short_help="rm pack")
+@click.argument('name')
+def pack(name):
+    try:
+        resp = packs_api.delete_pack(name=name, **context.settings)
+        if resp.status_code == 204:
+            click.echo('Deleted pack ' + name)
+        else:
+            click.echo('Error deleting ' + name + '. Status Code: ' + click.style(
+                str(resp.status_code),
+                fg='red'))
+    except Exception, e:
+        print 'Delete pack failed. %s' % e
+        sys.exit(1)
+
 
 @click.command(short_help="rm template")
 @click.argument('name')
@@ -193,5 +209,6 @@ rm.add_command(org)
 rm.add_command(plugin)
 rm.add_command(rule)
 rm.add_command(tag)
+rm.add_command(pack)
 rm.add_command(template)
 rm.add_command(token)

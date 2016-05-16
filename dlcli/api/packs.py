@@ -10,7 +10,14 @@ def get_packs(url='', org='', account='', key='', **kwargs):
         utils.build_api_url(url,
                             org,
                             account,
-                            endpoint='packs'),
+                            endpoint='/packs'),
         headers={'Authorization': "Bearer " + key}).json()
 
 
+def delete_pack(url='', org='', account='', key='', name='', **kwargs):
+    return requests.delete(
+        utils.build_api_url(url,
+                            org,
+                            account,
+                            endpoint='/packs/%s' % name),
+        headers={'Authorization': "Bearer " + key})
