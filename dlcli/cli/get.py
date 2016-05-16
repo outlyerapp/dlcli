@@ -12,6 +12,7 @@ from ..api import packs as packs_api
 from ..api import plugins as plugins_api
 from ..api import rules as rules_api
 from ..api import tags as tags_api
+from ..api import templates as templates_api
 from ..api import metrics as metrics_api
 from ..api import series as series_api
 from ..api import user as user_api
@@ -310,6 +311,25 @@ def packs():
         sys.exit(1)
 
 
+@click.command(short_help="Get templates")
+@click.argument('type', type=click.Choice(['all', 'public', 'private']), default='private')
+def templates(type):
+    try:
+        if type == 'all':
+            for t in templates_api.get_public_templates(**context.settings):
+                click.echo(t['name'])
+            for t in templates_api.get_private_templates(**context.settings):
+                click.echo(t['name'])
+        if type == 'public':
+            for t in templates_api.get_public_templates(**context.settings):
+                click.echo(t['name'])
+        if type == 'private':
+            for t in templates_api.get_private_templates(**context.settings):
+                click.echo(t['name'])
+    except Exception, e:
+        print 'Get templates failed. %s' % e
+        sys.exit(1)
+
 get.add_command(accounts)
 get.add_command(agents)
 get.add_command(agent)
@@ -322,6 +342,7 @@ get.add_command(criterias)
 get.add_command(rules)
 get.add_command(alerts)
 get.add_command(tags)
+get.add_command(templates)
 get.add_command(metrics)
 get.add_command(series)
 get.add_command(user)
