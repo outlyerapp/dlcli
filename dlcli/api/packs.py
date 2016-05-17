@@ -19,5 +19,5 @@ def delete_pack(url='', org='', account='', key='', name='', **kwargs):
         utils.build_api_url(url,
                             org,
                             account,
-                            endpoint='/packs/%s' % name),
+                            endpoint='/packs/private/%s' % name),
         headers={'Authorization': "Bearer " + key})
