@@ -66,7 +66,7 @@ def put_manifest(url='', org='', account='', key='', name='', path='', **kwargs)
         data=json.dumps(content))
 
 
-def put_plugin(url='', org='', account='', key='', path='', name='', **kwargs):
+def put_plugin(url='', org='', account='', key='', path='', template='', **kwargs):
     plugin_name = os.path.splitext(os.path.basename(path))[0]
     plugin_extension = os.path.splitext(os.path.basename(path))[1]
     plugin_content = utils.read_file_content(path)
@@ -79,32 +79,32 @@ def put_plugin(url='', org='', account='', key='', path='', name='', **kwargs):
         utils.build_api_url(url,
                             org,
                             account,
-                            endpoint='/templates/private/%s/plugins' % plugin_name),
+                            endpoint='/templates/private/%s/plugins' % template),
         headers={'Authorization': "Bearer " + key},
         data=payload)
     return resp
 
 
-def put_dashboard(url='', org='', account='', key='', path='', name='', **kwargs):
+def put_dashboard(url='', org='', account='', key='', path='', template='', **kwargs):
     dashboard_name = os.path.splitext(os.path.basename(path))[0]
     dashboard_yaml = utils.read_file_content(path)
     return requests.post(
         utils.build_api_url(url,
                             org,
                             account,
-                            endpoint='/templates/private/%s/dashboards' % dashboard_name),
+                            endpoint='/templates/private/%s/dashboards' % template),
         headers={'Authorization': "Bearer " + key, "Content-Type": "application/yaml"},
         data=dashboard_yaml)
 
 
-def put_rule(url='', org='', account='', key='', path='', name='', **kwargs):
+def put_rule(url='', org='', account='', key='', path='', template='', **kwargs):
     rule_name = os.path.splitext(os.path.basename(path))[0]
     rule_content = utils.read_file_content(path)
     return requests.post(
         utils.build_api_url(url,
                             org,
                             account,
-                            endpoint='/templates/private/%s/rules' % rule_name),
+                            endpoint='/templates/private/%s/rules' % template),
         headers={'Authorization': "Bearer " + key, "Content-Type": "application/yaml"},
         data=rule_content)
 

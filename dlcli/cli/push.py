@@ -65,17 +65,17 @@ def template(name, path):
         # upload plugins
         for p in os.listdir(os.path.join(path, 'plugins')):
             if p.endswith(".py"):
-                templates_api.put_plugin(path=os.path.join(path, 'plugins', p), name=name, **context.settings)
+                templates_api.put_plugin(path=os.path.join(path, 'plugins', p), template=name, **context.settings)
 
         # upload dashboards
         for p in os.listdir(os.path.join(path, 'dashboards')):
             if p.endswith(".yaml"):
-                templates_api.put_dashboard(path=os.path.join(path, 'dashboards', p), name=name, **context.settings)
+                templates_api.put_dashboard(path=os.path.join(path, 'dashboards', p), template=name, **context.settings)
 
         # upload rules
         for p in os.listdir(os.path.join(path, 'rules')):
             if p.endswith(".yaml"):
-                templates_api.put_rule(path=os.path.join(path, 'rules', p), name=name, **context.settings)
+                templates_api.put_rule(path=os.path.join(path, 'rules', p), template=name, **context.settings)
 
     except Exception, e:
         print 'Push template failed. %s' % e
