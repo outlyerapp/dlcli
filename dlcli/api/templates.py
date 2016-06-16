@@ -43,7 +43,7 @@ def create_template(url='', org='', account='', key='', name='', **kwargs):
                             account,
                             endpoint='templates/private'),
         data={"name": name},
-        headers={'Authorization': "Bearer " + key}).json()
+        headers={'Authorization': "Bearer " + key})
 
 
 def delete_template(url='', org='', account='', key='', name='', **kwargs):

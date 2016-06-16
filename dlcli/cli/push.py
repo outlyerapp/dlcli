@@ -57,25 +57,45 @@ def template(name, path):
         templates_api.delete_template(name=name, **context.settings)
 
         # create new template
-        templates_api.create_template(name=name, **context.settings)
+        resp = templates_api.create_template(name=name, **context.settings)
+        if resp.status_code == 200:
+            click.echo('Template created: ' + name)
+        else:
+            click.echo('Error creating template ' + name + '. Status Code: ' + click.style(str(resp.status_code), fg='red'))
 
         # upload package.yaml
-        templates_api.put_manifest(name=name, path=path, **context.settings)
+        resp = templates_api.put_manifest(name=name, path=path, **context.settings)
+        if resp.status_code == 200:
+            click.echo('Uploaded package.yaml')
+        else:
+            click.echo('Error uploading package.yaml' + '. Status Code: ' + click.style(str(resp.status_code), fg='red'))
 
         # upload plugins
         for p in os.listdir(os.path.join(path, 'plugins')):
             if p.endswith(".py"):
-                templates_api.put_plugin(path=os.path.join(path, 'plugins', p), template=name, **context.settings)
+                resp = templates_api.put_plugin(path=os.path.join(path, 'plugins', p), template=name, **context.settings)
+                if resp.status_code == 200:
+                    click.echo('Uploaded plugin ' + p)
+                else:
+                    click.echo('Error uploading plugin ' + p + '. Status Code: ' + click.style(str(resp.status_code), fg='red'))
 
         # upload dashboards
         for p in os.listdir(os.path.join(path, 'dashboards')):
             if p.endswith(".yaml"):
-                templates_api.put_dashboard(path=os.path.join(path, 'dashboards', p), template=name, **context.settings)
+                resp = templates_api.put_dashboard(path=os.path.join(path, 'dashboards', p), template=name, **context.settings)
+                if resp.status_code == 200:
+                    click.echo('Uploaded dashboard ' + p)
+                else:
+                    click.echo('Error uploading dashboard ' + p + '. Status Code: ' + click.style(str(resp.status_code), fg='red'))
 
         # upload rules
         for p in os.listdir(os.path.join(path, 'rules')):
             if p.endswith(".yaml"):
-                templates_api.put_rule(path=os.path.join(path, 'rules', p), template=name, **context.settings)
+                resp = templates_api.put_rule(path=os.path.join(path, 'rules', p), template=name, **context.settings)
+                if resp.status_code == 200:
+                    click.echo('Uploaded rule ' + p)
+                else:
+                    click.echo('Error uploading rule ' + p + '. Status Code: ' + click.style(str(resp.status_code), fg='red'))
 
     except Exception, e:
         print 'Push template failed. %s' % e
