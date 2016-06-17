@@ -51,7 +51,7 @@ def import_plugin(url='', org='', account='', key='', plugin_path='', **kwargs):
     return resp
 
 
-def delete_plugin(url='', org='', account='', key='', plugin_name='', **kwargs ):
+def delete_plugin(url='', org='', account='', key='', plugin='', **kwargs ):
     return requests.delete(
-        utils.build_api_url(url, org, account, endpoint='plugins' + '/' + plugin_name),
+        utils.build_api_url(url, org, account, endpoint='plugins' + '/' + plugin),
         headers={'Authorization': "Bearer " + key})
