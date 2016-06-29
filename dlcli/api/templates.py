@@ -88,11 +88,11 @@ def put_plugin(url='', org='', account='', key='', path='', template='', **kwarg
 def put_dashboard(url='', org='', account='', key='', path='', template='', **kwargs):
     dashboard_name = os.path.splitext(os.path.basename(path))[0]
     dashboard_yaml = utils.read_file_content(path)
-    return requests.post(
+    return requests.put(
         utils.build_api_url(url,
                             org,
                             account,
-                            endpoint='/templates/private/%s/dashboards' % template),
+                            endpoint='/templates/private/%s/dashboards/%s' % (template, dashboard_name)),
         headers={'Authorization': "Bearer " + key, "Content-Type": "application/yaml"},
         data=dashboard_yaml)
 

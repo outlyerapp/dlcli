@@ -32,7 +32,7 @@ def template(name):
         if resp.status_code == 200:
             click.echo('Installed pack ' + name)
         else:
-            click.echo('Error deleting ' + name + '. Status Code: ' + click.style(
+            click.echo('Error installing ' + name + '. Status Code: ' + click.style(
                 str(resp.status_code),
                 fg='red'))
     except Exception, e:
