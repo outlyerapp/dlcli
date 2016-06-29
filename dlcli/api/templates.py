@@ -116,4 +116,4 @@ def install_template(url='', org='', account='', key='', name='', **kwargs):
                             account,
                             endpoint='/packs'),
         headers={'Authorization': "Bearer " + key},
-        data={"name": name, "force": True, "email": "", "repo": "private"})
+        json={"name": name, "force": True, "email": "", "repo": "private"})
