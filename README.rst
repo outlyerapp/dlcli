@@ -29,13 +29,13 @@ now verify you have a successful connection
 
 .. code-block:: none
 
-    dlcli show status
+    dlcli status
 
 then get a list of all of your agents
 
 .. code-block:: none
 
-    dlcli show agents
+    dlcli get agents
 
 fun! this is a work in progress so if you want to collaborate please raise PR's
 
