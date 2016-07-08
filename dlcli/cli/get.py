@@ -2,9 +2,11 @@ from ..cli import *
 import sys
 import yaml
 import click
+import json
 import logging
 
 from ..api import accounts as accounts_api
+from ..api import annotations as annotations_api
 from ..api import agents as agents_api
 from ..api import dashboards as dashboards_api
 from ..api import links as links_api
@@ -341,6 +343,25 @@ def template(name):
         print 'Get template failed. %s' % e
         sys.exit(1)
 
+@click.command(short_help="Get streams")
+def streams():
+    try:
+        for s in annotations_api.get_streams(**context.settings):
+            click.echo(s)
+    except Exception, e:
+        print 'Get streams failed. %s' % e
+        sys.exit(1)
+
+@click.command(short_help="Get annotations")
+@click.argument('stream')
+def annotations(stream):
+    try:
+        for s in annotations_api.get_annotations(stream=stream, **context.settings):
+            click.echo(json.dumps(s, indent=4, sort_keys=True))
+    except Exception, e:
+        print 'Get streams failed. %s' % e
+        sys.exit(1)
+
 
 get.add_command(accounts)
 get.add_command(agents)
@@ -359,3 +380,5 @@ get.add_command(templates)
 get.add_command(metrics)
 get.add_command(series)
 get.add_command(user)
+get.add_command(streams)
+get.add_command(annotations)

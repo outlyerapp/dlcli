@@ -4,6 +4,7 @@ import sys
 import logging
 
 from ..api import accounts as accounts_api
+from ..api import annotations as annotations_api
 from ..api import agents as agents_api
 from ..api import dashboards as dashboards_api
 from ..api import links as links_api
@@ -201,6 +202,21 @@ def template(name):
         print 'Delete template failed. %s' % e
         sys.exit(1)
 
+@click.command(short_help="rm stream")
+@click.argument('name')
+def stream(name):
+    try:
+        resp = annotations_api.delete_stream(stream=name, **context.settings)
+        if resp.status_code == 204:
+            click.echo('Deleted stream ' + name)
+        else:
+            click.echo('Error deleting ' + name + '. Status Code: ' + click.style(
+                str(resp.status_code),
+                fg='red'))
+    except Exception, e:
+        print 'Delete stream failed. %s' % e
+        sys.exit(1)
+
 rm.add_command(account)
 rm.add_command(agent)
 rm.add_command(dashboard)
@@ -212,3 +228,4 @@ rm.add_command(tag)
 rm.add_command(pack)
 rm.add_command(template)
 rm.add_command(token)
+rm.add_command(stream)

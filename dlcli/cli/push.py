@@ -4,6 +4,7 @@ import sys
 import click
 import logging
 
+from ..api import annotations as annotations_api
 from ..api import dashboards as dashboards_api
 from ..api import plugins as plugins_api
 from ..api import rules as rules_api
@@ -102,7 +103,19 @@ def template(name, path):
         print 'Push template failed. %s' % e
         sys.exit(1)
 
+@click.command(short_help="Push an annotation")
+@click.argument('stream')
+@click.option('--name', help='annotation name', type=str, default=None)
+@click.option('--description', help='annotation description', type=str, default=None)
+def annotation(stream, name, description):
+    try:
+        annotations_api.create_annotation(stream=stream, name=name, description=description, **context.settings)
+    except Exception, e:
+        print 'Push annotation failed. %s' % e
+        sys.exit(1)
+
 push.add_command(dashboard)
 push.add_command(plugin)
 push.add_command(rule)
 push.add_command(template)
+push.add_command(annotation)
