@@ -9,7 +9,17 @@ install dlcli using pip
 
     pip install dlcli
 
-set your org, account and api key
+set your org, account and api key by creating ~/dlcli.yaml
+
+.. code-block:: none
+
+---
+    account: account_name
+    key: key_from_account_settings
+    org: orgname
+    url: https://app.dataloop.io/api/v1
+
+Or you can update the file interactively.
 
 .. code-block:: none
 
