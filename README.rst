@@ -13,7 +13,7 @@ set your org, account and api key by creating ~/dlcli.yaml
 
 .. code-block:: none
 
----
+    ---
     account: account_name
     key: key_from_account_settings
     org: orgname
