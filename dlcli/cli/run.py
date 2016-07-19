@@ -92,5 +92,5 @@ def command(command, agent, tag):
         sys.exit(1)
 
 
-run.add_command(plugin)
-run.add_command(command)
+#run.add_command(plugin)
+#run.add_command(command)

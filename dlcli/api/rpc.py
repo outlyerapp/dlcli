@@ -1,7 +1,6 @@
 import os
 import base64
 import logging
-import grequests
 import utils
 
 logger = logging.getLogger(__name__)
@@ -13,7 +12,8 @@ def set_meta(meta):
         return r
     return hook
 
-
+# TODO: Replace grequests with a pool
+"""
 def run_local(url='', org='', account='', key='', plugin_path='', agent_list='', **kwargs):
     plugin_name = os.path.splitext(os.path.basename(plugin_path))
     plugin_content = utils.read_file_content(plugin_path)
@@ -60,3 +60,4 @@ def run_command(url='', org='', account='', key='', command='', agent_list='', *
     for resp in grequests.imap(requests, size=10):
         data.append([resp.meta, resp.json()])
     return data
+"""
