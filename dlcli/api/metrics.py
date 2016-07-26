@@ -14,6 +14,7 @@ def get_agent_metrics(url='', org='', account='', key='', agent_id='', **kwargs)
         headers={'Authorization': "Bearer " + key},
         params={"source": agent_id}).json()
 
+
 def put_agent_metric_status(url='', org='', account='', key='', agent_id='', metric='', status='', **kwargs):
     return requests.put(
         utils.build_api_url(url,
@@ -23,6 +24,7 @@ def put_agent_metric_status(url='', org='', account='', key='', agent_id='', met
         headers={'Authorization': "Bearer " + key},
         params={"source": agent_id},
         data={"status": status}).json()
+
 
 def get_tag_metrics(url='', org='', account='', key='', tag_name='', **kwargs):
     return requests.get(
