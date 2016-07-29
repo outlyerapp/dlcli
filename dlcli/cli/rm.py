@@ -8,12 +8,10 @@ from ..api import annotations as annotations_api
 from ..api import agents as agents_api
 from ..api import dashboards as dashboards_api
 from ..api import links as links_api
-from ..api import metrics as metrics_api
 from ..api import orgs as orgs_api
 from ..api import packs as packs_api
 from ..api import plugins as plugins_api
 from ..api import rules as rules_api
-from ..api import series as series_api
 from ..api import tags as tags_api
 from ..api import templates as templates_api
 from ..api import user as user_api
@@ -219,31 +217,6 @@ def stream(name):
         print 'Delete stream failed. %s' % e
         sys.exit(1)
 
-@click.command(short_help="rm metric paths")
-@click.option('--period', help='check back this number of hours', type=int, default=48)
-@click.option('--resolution', help='number of hours distance between points', type=int, default=1)
-def metrics(period, resolution):
-    try:
-        period_seconds = period * 3600
-        resolution_seconds = resolution * 3600
-
-        # for every metrics in 'all' tag
-        for m in metrics_api.get_tag_metrics(tag_name="all", **context.settings):
-            try:
-                # expires metric paths
-                resp = series_api.delete_tag_metric_paths(tag="all",
-                                                     metric=m['name'],
-                                                     period=period_seconds,
-                                                     resolution=resolution_seconds,
-                                                     **context.settings)
-                click.echo(click.style('Expired: %s paths in %s', fg='green') % (resp, m['name']))
-            except ValueError:
-                continue # decoding failed
-
-    except Exception, e:
-        print 'Cleanup metrics failed. %s' % e
-        sys.exit(1)
-
 rm.add_command(account)
 rm.add_command(agent)
 rm.add_command(dashboard)
@@ -256,4 +229,3 @@ rm.add_command(pack)
 rm.add_command(template)
 rm.add_command(token)
 rm.add_command(stream)
-rm.add_command(metrics)
