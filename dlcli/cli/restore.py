@@ -37,7 +37,7 @@ def org(org):
 @click.command(short_help="Restore metric paths")
 def metrics():
     try:
-        resp = series.update_tag_metric_paths(tag="all", **context.settings)
+        resp = series.update_tag_metrics(tag="all", status='valid', **context.settings)
         click.echo(click.style('Recovered: %s paths', fg='green') % (resp))
     except Exception, e:
         print 'Cleanup metrics failed. %s' % e
