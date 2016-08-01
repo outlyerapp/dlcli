@@ -8,13 +8,17 @@ from ..api import annotations as annotations_api
 from ..api import agents as agents_api
 from ..api import dashboards as dashboards_api
 from ..api import links as links_api
+from ..api import metrics as metrics_api
 from ..api import orgs as orgs_api
 from ..api import packs as packs_api
 from ..api import plugins as plugins_api
 from ..api import rules as rules_api
+from ..api import series as series_api
 from ..api import tags as tags_api
 from ..api import templates as templates_api
 from ..api import user as user_api
+
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -217,6 +221,50 @@ def stream(name):
         print 'Delete stream failed. %s' % e
         sys.exit(1)
 
+@click.command(short_help="rm metric paths")
+@click.option('--period', help='check back this number of hours', type=int, default=48)
+@click.option('--resolution', help='number of hours distance between points', type=int, default=1)
+def metrics(period, resolution):
+    try:
+        expired_paths = 0
+        period_seconds = period * 3600
+        resolution_seconds = resolution * 3600
+        metrics = metrics_api.get_tag_metrics(tag_name="all", **context.settings)
+        click.echo(click.style('Found: %s paths', fg='green') % (len(metrics)))
+
+        for m in tqdm(metrics):             # for every metrics in 'all' tag
+            try:
+                # get series
+                metric_series = series_api.get_tag_series(tag="all",
+                                                     metric=m['name'],
+                                                     period=period_seconds,
+                                                     resolution=resolution_seconds,
+                                                     **context.settings)
+
+                # find the expired series: no points means no confidence
+                # empty points array means expired metric path
+                expired_series = filter((lambda m:
+                        False if not 'points' in m else not len(m['points']))
+                    , metric_series)
+
+                if len(expired_series) == 0:
+                    continue                # nothing to expire, carry on
+
+                # expires metric paths, only for the right sources
+                expired_source_ids = [series['source']['id'] for series in expired_series]
+                expired_paths += series_api.update_agents_metric_paths(agents=expired_source_ids,
+                                                     metric=m['name'],
+                                                     status='expired',
+                                                     **context.settings)
+            except ValueError:
+                continue                    # decoding failed?
+
+        click.echo(click.style('Expired: %s paths', fg='green') % (expired_paths))
+        
+    except Exception, e:
+        print 'Cleanup metrics failed. %s' % e
+        sys.exit(1)
+
 rm.add_command(account)
 rm.add_command(agent)
 rm.add_command(dashboard)
@@ -229,3 +277,4 @@ rm.add_command(pack)
 rm.add_command(template)
 rm.add_command(token)
 rm.add_command(stream)
+rm.add_command(metrics)

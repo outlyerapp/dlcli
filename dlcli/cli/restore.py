@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 @cli.group('restore')
 def restore():
-    """restores backups"""
+    """restores backups and metric paths"""
 
 
 @click.command(short_help="Restore an Account")
@@ -34,5 +34,16 @@ def org(org):
         sys.exit(1)
 
 
+@click.command(short_help="Restore metric paths")
+def metrics():
+    try:
+        resp = series.update_tag_metrics(tag="all", status='valid', **context.settings)
+        click.echo(click.style('Recovered: %s paths', fg='green') % (resp))
+    except Exception, e:
+        print 'Cleanup metrics failed. %s' % e
+        sys.exit(1)
+
+
 restore.add_command(account)
 restore.add_command(org)
+restore.add_command(metrics)
