@@ -6,7 +6,6 @@ import logging
 from tqdm import tqdm
 from functools import partial
 from multiprocessing import Pool
-from multiprocessing import cpu_count
 from requests.exceptions import ConnectionError
 
 from ..api import accounts as accounts_api
@@ -250,9 +249,10 @@ def expire_metric_path(period_seconds, resolution_seconds, m):
 @click.option('--period', help='check back this number of hours', type=int, default=48)
 @click.option('--resolution', help='number of hours distance between points', type=int, default=1)
 @click.option('--tag', help='name of the tag where metric paths should be cleaned up', type=str, default="all")
-def metrics(period, resolution, tag):
+@click.option('--threads', help='number of threads to start', type=int, default=1)
+def metrics(period, resolution, tag, threads):
     try:
-        pool = Pool(processes=cpu_count())
+        pool = Pool(processes=threads)
         period_seconds = period * 3600
         resolution_seconds = resolution * 3600
         m = metrics_api.get_tag_metrics(tag_name=tag, **context.settings)
