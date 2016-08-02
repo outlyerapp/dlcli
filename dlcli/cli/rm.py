@@ -7,6 +7,7 @@ from tqdm import tqdm
 from functools import partial
 from multiprocessing import Pool
 from multiprocessing import cpu_count
+from requests.exceptions import ConnectionError
 
 from ..api import accounts as accounts_api
 from ..api import annotations as annotations_api
@@ -31,7 +32,6 @@ logger = logging.getLogger(__name__)
 def rm():
     """deletes things"""
 
-
 @click.command(short_help="rm account")
 @click.argument('account')
 def account(account):
@@ -48,7 +48,6 @@ def account(account):
     except Exception, e:
         print 'Delete account failed. %s' % e
         sys.exit(1)
-
 
 @click.command(short_help="rm agent")
 @click.argument('agent')
@@ -96,7 +95,6 @@ def link(link):
         print 'Delete link failed. %s' % e
         sys.exit(1)
 
-
 @click.command(short_help="rm org")
 @click.argument('org')
 def org(org):
@@ -131,7 +129,6 @@ def plugin(plugin):
     except Exception, e:
         print 'Delete plugin failed. %s' % e
         sys.exit(1)
-
 
 @click.command(short_help="rm rule")
 @click.argument('rule')
@@ -178,7 +175,6 @@ def token(name):
         print 'Delete token failed. %s' % e
         sys.exit(1)
 
-
 @click.command(short_help="rm pack")
 @click.argument('name')
 def pack(name):
@@ -193,7 +189,6 @@ def pack(name):
     except Exception, e:
         print 'Delete pack failed. %s' % e
         sys.exit(1)
-
 
 @click.command(short_help="rm template")
 @click.argument('name')
@@ -225,20 +220,19 @@ def stream(name):
         print 'Delete stream failed. %s' % e
         sys.exit(1)
 
+
 def expire_metric_path(period_seconds, resolution_seconds, m):
     try:
         # get series
         metric_series = series_api.get_tag_series(tag="all",
-                                             metric=m['name'],
-                                             period=period_seconds,
-                                             resolution=resolution_seconds,
-                                             **context.settings)
+                                                  metric=m['name'],
+                                                  period=period_seconds,
+                                                  resolution=resolution_seconds,
+                                                  **context.settings)
 
         # find the expired series: no points means no confidence
         # empty points array means expired metric path
-        expired_series = filter((lambda m:
-                False if not 'points' in m else not len(m['points']))
-            , metric_series)
+        expired_series = filter((lambda s: False if 'points' not in s else not len(s['points'])), metric_series)
 
         if len(expired_series) == 0:
             return None                # nothing to expire, carry on
@@ -246,12 +240,11 @@ def expire_metric_path(period_seconds, resolution_seconds, m):
         # expires metric paths, only for the right sources
         expired_source_ids = [series['source']['id'] for series in expired_series]
         series_api.update_agents_metric_paths(agents=expired_source_ids,
-                                             metric=m['name'],
-                                             status='expired',
-                                             **context.settings)
-    except (KeyboardInterrupt, ValueError, requests.exceptions.ConnectionError):
+                                              metric=m['name'],
+                                              status='expired',
+                                              **context.settings)
+    except (KeyboardInterrupt, ValueError, ConnectionError):
         return None
-
 
 @click.command(short_help="rm metric paths")
 @click.option('--period', help='check back this number of hours', type=int, default=48)
@@ -262,22 +255,19 @@ def metrics(period, resolution, tag):
         pool = Pool(processes=cpu_count())
         period_seconds = period * 3600
         resolution_seconds = resolution * 3600
-        metrics = metrics_api.get_tag_metrics(tag_name=tag, **context.settings)
-        click.echo(click.style('Found: %s metrics', fg='green') % (len(metrics)))
+        m = metrics_api.get_tag_metrics(tag_name=tag, **context.settings)
+        click.echo(click.style('Found: %s metrics', fg='green') % (len(m)))
 
         expire = partial(expire_metric_path, period_seconds, resolution_seconds)
-        expired_paths = tqdm(pool.imap_unordered(expire, metrics))
+        expired_paths = tqdm(pool.imap_unordered(expire, m))
 
         expired_paths = sum(filter(None, expired_paths))
         click.echo(click.style('Expired: %s metric paths', fg='green') % (expired_paths))
-
-    except Exception, e:
-        print 'Cleanup metrics failed. %s' % e
-
-    finally:
         pool.terminate()
         pool.join()
 
+    except Exception, e:
+        print 'Cleanup metrics failed. %s' % e
 
 rm.add_command(account)
 rm.add_command(agent)
