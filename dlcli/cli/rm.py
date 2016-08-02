@@ -256,14 +256,15 @@ def expire_metric_path(period_seconds, resolution_seconds, m):
 @click.command(short_help="rm metric paths")
 @click.option('--period', help='check back this number of hours', type=int, default=48)
 @click.option('--resolution', help='number of hours distance between points', type=int, default=1)
-def metrics(period, resolution):
+@click.option('--tag', help='name of the tag where metric paths should be cleaned up', type=str, default="all")
+def metrics(period, resolution, tag):
     try:
+        pool = Pool(processes=cpu_count())
         period_seconds = period * 3600
         resolution_seconds = resolution * 3600
-        metrics = metrics_api.get_tag_metrics(tag_name="all", **context.settings)
+        metrics = metrics_api.get_tag_metrics(tag_name=tag, **context.settings)
         click.echo(click.style('Found: %s metrics', fg='green') % (len(metrics)))
 
-        pool = Pool(processes=cpu_count())
         expire = partial(expire_metric_path, period_seconds, resolution_seconds)
         expired_paths = tqdm(pool.imap_unordered(expire, metrics))
 
