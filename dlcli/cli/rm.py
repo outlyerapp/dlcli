@@ -3,6 +3,11 @@ import click
 import sys
 import logging
 
+from tqdm import tqdm
+from functools import partial
+from multiprocessing import Pool
+from multiprocessing import cpu_count
+
 from ..api import accounts as accounts_api
 from ..api import annotations as annotations_api
 from ..api import agents as agents_api
@@ -18,7 +23,6 @@ from ..api import tags as tags_api
 from ..api import templates as templates_api
 from ..api import user as user_api
 
-from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -221,49 +225,58 @@ def stream(name):
         print 'Delete stream failed. %s' % e
         sys.exit(1)
 
+def expire_metric_path(period_seconds, resolution_seconds, m):
+    try:
+        # get series
+        metric_series = series_api.get_tag_series(tag="all",
+                                             metric=m['name'],
+                                             period=period_seconds,
+                                             resolution=resolution_seconds,
+                                             **context.settings)
+
+        # find the expired series: no points means no confidence
+        # empty points array means expired metric path
+        expired_series = filter((lambda m:
+                False if not 'points' in m else not len(m['points']))
+            , metric_series)
+
+        if len(expired_series) == 0:
+            return None                # nothing to expire, carry on
+
+        # expires metric paths, only for the right sources
+        expired_source_ids = [series['source']['id'] for series in expired_series]
+        series_api.update_agents_metric_paths(agents=expired_source_ids,
+                                             metric=m['name'],
+                                             status='expired',
+                                             **context.settings)
+    except (KeyboardInterrupt, ValueError, requests.exceptions.ConnectionError):
+        return None
+
+
 @click.command(short_help="rm metric paths")
 @click.option('--period', help='check back this number of hours', type=int, default=48)
 @click.option('--resolution', help='number of hours distance between points', type=int, default=1)
 def metrics(period, resolution):
     try:
-        expired_paths = 0
         period_seconds = period * 3600
         resolution_seconds = resolution * 3600
         metrics = metrics_api.get_tag_metrics(tag_name="all", **context.settings)
-        click.echo(click.style('Found: %s paths', fg='green') % (len(metrics)))
+        click.echo(click.style('Found: %s metrics', fg='green') % (len(metrics)))
 
-        for m in tqdm(metrics):             # for every metrics in 'all' tag
-            try:
-                # get series
-                metric_series = series_api.get_tag_series(tag="all",
-                                                     metric=m['name'],
-                                                     period=period_seconds,
-                                                     resolution=resolution_seconds,
-                                                     **context.settings)
+        pool = Pool(processes=cpu_count())
+        expire = partial(expire_metric_path, period_seconds, resolution_seconds)
+        expired_paths = tqdm(pool.imap_unordered(expire, metrics))
 
-                # find the expired series: no points means no confidence
-                # empty points array means expired metric path
-                expired_series = filter((lambda m:
-                        False if not 'points' in m else not len(m['points']))
-                    , metric_series)
+        expired_paths = sum(filter(None, expired_paths))
+        click.echo(click.style('Expired: %s metric paths', fg='green') % (expired_paths))
 
-                if len(expired_series) == 0:
-                    continue                # nothing to expire, carry on
-
-                # expires metric paths, only for the right sources
-                expired_source_ids = [series['source']['id'] for series in expired_series]
-                expired_paths += series_api.update_agents_metric_paths(agents=expired_source_ids,
-                                                     metric=m['name'],
-                                                     status='expired',
-                                                     **context.settings)
-            except ValueError:
-                continue                    # decoding failed?
-
-        click.echo(click.style('Expired: %s paths', fg='green') % (expired_paths))
-        
     except Exception, e:
         print 'Cleanup metrics failed. %s' % e
-        sys.exit(1)
+
+    finally:
+        pool.terminate()
+        pool.join()
+
 
 rm.add_command(account)
 rm.add_command(agent)
