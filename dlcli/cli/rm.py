@@ -219,30 +219,33 @@ def stream(name):
         print 'Delete stream failed. %s' % e
         sys.exit(1)
 
+def _find_expired_metric_path(period_seconds, resolution_seconds, tag, m):
+    if period_seconds > 3600:
+        # check if there is something to expire from the last 5 minutes first
+        if len(_find_expired_metric_path(300, 2, tag, m)) == 0:
+            return []
+    metric_series = series_api.get_tag_series(tag=tag,
+                                              metric=m['name'],
+                                              period=period_seconds,
+                                              resolution=resolution_seconds,
+                                              **context.settings)
+    # find the expired series: no points means no confidence
+    # empty points array means expired metric path
+    expired_series = filter((lambda s: False if 'points' not in s else not len(s['points'])), metric_series)
+    return expired_series
 
-def expire_metric_path(period_seconds, resolution_seconds, m):
+def _expire_metric_path(period_seconds, resolution_seconds, tag, m):
     try:
-        # get series
-        metric_series = series_api.get_tag_series(tag="all",
-                                                  metric=m['name'],
-                                                  period=period_seconds,
-                                                  resolution=resolution_seconds,
-                                                  **context.settings)
-
-        # find the expired series: no points means no confidence
-        # empty points array means expired metric path
-        expired_series = filter((lambda s: False if 'points' not in s else not len(s['points'])), metric_series)
-
+        expired_series = _find_expired_metric_path(period_seconds, resolution_seconds, tag, m)
         if len(expired_series) == 0:
-            return None                # nothing to expire, carry on
-
+            return None
         # expires metric paths, only for the right sources
         expired_source_ids = [series['source']['id'] for series in expired_series]
-        series_api.update_agents_metric_paths(agents=expired_source_ids,
-                                              metric=m['name'],
-                                              status='expired',
-                                              **context.settings)
-    except (KeyboardInterrupt, ValueError, ConnectionError):
+        return series_api.update_agents_metric_paths(agents=expired_source_ids,
+                                                     metric=m['name'],
+                                                     status='expired',
+                                                     **context.settings)
+    except (KeyboardInterrupt, ValueError, ConnectionError), e:
         return None
 
 @click.command(short_help="rm metric paths")
@@ -258,16 +261,18 @@ def metrics(period, resolution, tag, threads):
         m = metrics_api.get_tag_metrics(tag_name=tag, **context.settings)
         click.echo(click.style('Found: %s metrics', fg='green') % (len(m)))
 
-        expire = partial(expire_metric_path, period_seconds, resolution_seconds)
+        expire = partial(_expire_metric_path, period_seconds, resolution_seconds, tag)
         expired_paths = tqdm(pool.imap_unordered(expire, m))
-
         expired_paths = sum(filter(None, expired_paths))
         click.echo(click.style('Expired: %s metric paths', fg='green') % (expired_paths))
-        pool.terminate()
-        pool.join()
 
     except Exception, e:
         print 'Cleanup metrics failed. %s' % e
+
+    finally:
+        pool.terminate()
+        pool.join()
+
 
 rm.add_command(account)
 rm.add_command(agent)
