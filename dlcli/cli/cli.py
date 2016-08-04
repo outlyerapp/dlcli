@@ -44,7 +44,7 @@ except ImportError:
               required=False)
 @click.option('--key',
               help='API Key',
-              type=click.UUID,
+              type=str,
               required=False)
 @click.version_option(version=__version__)
 def cli(settingsfile, url, org, account, key, backupdir, loglevel, debug):
