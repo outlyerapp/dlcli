@@ -52,7 +52,7 @@ def import_rule(url='', org='', account='', key='', rule_path='', **kwargs):
                             endpoint='rules'),
         headers={'Authorization': "Bearer " + key},
         data={"name": rule_name})
-    requests.put(
+    return requests.put(
         utils.build_api_url(url,
                             org,
                             account,
