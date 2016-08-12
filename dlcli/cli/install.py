@@ -4,6 +4,7 @@ import sys
 import logging
 import context
 
+from ..api import packs as packs_api
 from ..api import templates as templates_api
 
 logger = logging.getLogger(__name__)
@@ -22,13 +23,18 @@ def template(name, yes):
         if not yes:
             click.confirm('This will uninstall and re-install the template as a pack. Are you sure?', abort=True)
 
-        resp = packs.delete_pack(name=name, **context.settings)
-        if resp.status_code == 204:
-            click.echo('Deleted pack ' + name)
-        else:
-            click.echo('Error deleting ' + name + '. Status Code: ' + click.style(
-                str(resp.status_code),
-                fg='red'))
+        pack_list = []
+        for pack in packs_api.get_packs(**context.settings):
+            pack_list.append(pack['name'])
+
+        if name in pack_list:
+            resp = packs_api.delete_pack(name=name, **context.settings)
+            if resp.status_code == 204:
+                click.echo('Deleted pack ' + name)
+            else:
+                click.echo('Error deleting ' + name + '. Status Code: ' + click.style(
+                    str(resp.status_code),
+                    fg='red'))
 
         resp = templates_api.install_template(name=name, **context.settings)
         if resp.status_code == 200:
