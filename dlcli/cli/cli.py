@@ -86,7 +86,7 @@ def cli(settingsfile, url, org, account, key, backupdir, loglevel, debug):
             context.settings[arg] = value
 
     if len(context.settings['key']) != 204:
-        print "Not a valid key! Please generate an API token under account settings."
+        print "Not a valid key! Please generate an API token at https://app.dataloop.io/#/user-account/api-tokens"
         sys.exit(2)
 
 
