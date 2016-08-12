@@ -17,7 +17,7 @@ set your org, account and api key by creating ~/dlcli.yaml
     account: account_name
     key: key_from_account_settings
     org: orgname
-    url: https://app.dataloop.io/api/v1
+    url: https://api.dataloop.io/v1
 
 Or you can update the file interactively.
 

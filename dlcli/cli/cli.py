@@ -85,6 +85,10 @@ def cli(settingsfile, url, org, account, key, backupdir, loglevel, debug):
         if value:
             context.settings[arg] = value
 
+    if len(context.settings['key']) != 204:
+        print "Not a valid key! Please generate an API token under account settings."
+        sys.exit(2)
+
 
 @click.command(short_help="status")
 def status():
@@ -94,9 +98,10 @@ def status():
     account = context.settings['account']
     key = context.settings['key']
 
-    click.echo('URL: %s/orgs/%s/accounts ' % (url, org))
+    click.echo('URL: %s' % url)
     click.echo('Organization: %s' % org)
     click.echo('Account: %s' % account)
+    click.echo('URI: %s/orgs/%s/accounts ' % (url, org))
     click.echo('Key: %s' % key)
 
     resp = requests.get(url + '/orgs/' + org + '/accounts/' + account, headers={'Authorization': "Bearer " + key}).status_code
