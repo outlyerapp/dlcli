@@ -24,9 +24,12 @@ def dashboard(dashboard):
     try:
         resp = dashboards_api.import_dashboard(file_path=dashboard, **context.settings)
         if resp.status_code == 200:
-            click.echo('Pushed dashboard: ' + dashboard)
+            click.echo('Pushed dashboard: ' + dashboard + ' Content Length: ' + resp.headers['content-length'])
         else:
-            click.echo('Error pushing dashboard ' + dashboard + '. Status Code: ' + click.style(str(resp.status_code), fg='red') + '. Message: ' + resp.content)
+            click.echo('Error pushing dashboard ' + dashboard +
+                       ' Content Length: + ' + resp.headers['content-length'] +
+                       ' Status Code: ' + click.style(str(resp.status_code), fg='red') +
+                       ' Message: ' + resp.content)
             sys.exit(1)
     except Exception, e:
         print 'Push dashboard failed. %s' % e
@@ -39,9 +42,12 @@ def plugin(plugin):
     try:
         resp = plugins_api.import_plugin(plugin_path=plugin, **context.settings)
         if resp.status_code == 200:
-            click.echo('Pushed plugin: ' + plugin)
+            click.echo('Pushed plugin: ' + plugin + ' Content Length: ' + resp.headers['content-length'])
         else:
-            click.echo('Error pushing plugin ' + plugin + '. Status Code: ' + click.style(str(resp.status_code), fg='red') + '. Message: ' + resp.content)
+            click.echo('Error pushing plugin ' + plugin +
+                       ' Content Length: + ' + resp.headers['content-length'] +
+                       ' Status Code: ' + click.style(str(resp.status_code), fg='red') +
+                       ' Message: ' + resp.content)
             sys.exit(1)
     except Exception, e:
         print 'Push plugin failed. %s' % e
@@ -54,9 +60,12 @@ def rule(rule):
     try:
         resp = rules_api.import_rule(rule_path=rule, **context.settings)
         if resp.status_code == 200:
-            click.echo('Pushed rule: ' + rule)
+            click.echo('Pushed rule: ' + rule + ' Content Length: ' + resp.headers['content-length'])
         else:
-            click.echo('Error pushing rule ' + rule + '. Status Code: ' + click.style(str(resp.status_code), fg='red') + '. Message: ' + resp.content)
+            click.echo('Error pushing rule ' + rule +
+                       ' Content Length: + ' + resp.headers['content-length'] +
+                       ' Status Code: ' + click.style(str(resp.status_code), fg='red') +
+                       ' Message: ' + resp.content)
             sys.exit(1)
     except Exception, e:
         print 'Push rule failed. %s' % e
