@@ -22,7 +22,12 @@ def push():
 @click.argument('dashboard')
 def dashboard(dashboard):
     try:
-        dashboards_api.import_dashboard(file_path=dashboard, **context.settings)
+        resp = dashboards_api.import_dashboard(file_path=dashboard, **context.settings)
+        if resp.status_code == 200:
+            click.echo('Pushed dashboard: ' + dashboard)
+        else:
+            click.echo('Error pushing dashboard ' + dashboard + '. Status Code: ' + click.style(str(resp.status_code), fg='red') + '. Message: ' + resp.content)
+            sys.exit(1)
     except Exception, e:
         print 'Push dashboard failed. %s' % e
         sys.exit(1)
@@ -32,7 +37,12 @@ def dashboard(dashboard):
 @click.argument('plugin')
 def plugin(plugin):
     try:
-        plugins_api.import_plugin(plugin_path=plugin, **context.settings)
+        resp = plugins_api.import_plugin(plugin_path=plugin, **context.settings)
+        if resp.status_code == 200:
+            click.echo('Pushed plugin: ' + plugin)
+        else:
+            click.echo('Error pushing plugin ' + plugin + '. Status Code: ' + click.style(str(resp.status_code), fg='red') + '. Message: ' + resp.content)
+            sys.exit(1)
     except Exception, e:
         print 'Push plugin failed. %s' % e
         sys.exit(1)
@@ -42,7 +52,12 @@ def plugin(plugin):
 @click.argument('rule')
 def rule(rule):
     try:
-        rules_api.import_rule(rule_path=rule, **context.settings)
+        resp = rules_api.import_rule(rule_path=rule, **context.settings)
+        if resp.status_code == 200:
+            click.echo('Pushed rule: ' + rule)
+        else:
+            click.echo('Error pushing rule ' + rule + '. Status Code: ' + click.style(str(resp.status_code), fg='red') + '. Message: ' + resp.content)
+            sys.exit(1)
     except Exception, e:
         print 'Push rule failed. %s' % e
         sys.exit(1)
