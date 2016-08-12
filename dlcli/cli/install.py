@@ -16,9 +16,11 @@ def install():
 
 @click.command(short_help="Install template")
 @click.argument('name')
-def template(name):
+@click.option('--yes', is_flag=True)
+def template(name, yes):
     try:
-        click.confirm('This will uninstall and re-install the template as a pack. Are you sure?', abort=True)
+        if not yes:
+            click.confirm('This will uninstall and re-install the template as a pack. Are you sure?', abort=True)
 
         resp = packs.delete_pack(name=name, **context.settings)
         if resp.status_code == 204:

@@ -51,9 +51,11 @@ def rule(rule):
 @click.command(short_help="Push a template")
 @click.argument('name')
 @click.argument('path')
-def template(name, path):
+@click.option('--yes', is_flag=True)
+def template(name, path, yes):
     try:
-        click.confirm('This will delete and recreate the template. Are you sure?', abort=True)
+        if not yes:
+            click.confirm('This will delete and recreate the template. Are you sure?', abort=True)
 
         # delete old template
         templates_api.delete_template(name=name, **context.settings)

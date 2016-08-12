@@ -33,11 +33,11 @@ def rm():
 
 @click.command(short_help="rm account")
 @click.argument('account')
-def account(account):
+@click.option('--yes', is_flag=True)
+def account(account, yes):
     try:
-        click.confirm(
-            'Once you delete an account, there is no going back. Are you sure?',
-            abort=True)
+        if not yes:
+            click.confirm('Once you delete an account, there is no going back. Are you sure?', abort=True)
         context.settings['account'] = account
         resp = accounts_api.delete_account(**context.settings)
         if resp.status_code == 204:
@@ -96,11 +96,11 @@ def link(link):
 
 @click.command(short_help="rm org")
 @click.argument('org')
-def org(org):
+@click.option('--yes', is_flag=True)
+def org(org, yes):
     try:
-        click.confirm(
-            'Once you delete an organization, there is no going back. Are you sure?',
-            abort=True)
+        if not yes:
+            click.confirm('Once you delete an organization, there is no going back. Are you sure?',abort=True)
         context.settings['org'] = org
         resp = orgs_api.delete_org(**context.settings)
         if resp.status_code == 204:
