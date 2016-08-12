@@ -63,7 +63,7 @@ def template(name, path):
         if resp.status_code == 200:
             click.echo('Template created: ' + name)
         else:
-            click.echo('Error creating template ' + name + '. Status Code: ' + click.style(str(resp.status_code), fg='red'))
+            click.echo('Error creating template ' + name + '. Status Code: ' + click.style(str(resp.status_code), fg='red')) + '. Message: ' + resp.content
 
         # upload package.yaml
         resp = templates_api.put_manifest(name=name, path=path, **context.settings)
