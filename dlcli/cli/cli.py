@@ -46,8 +46,13 @@ except ImportError:
               help='API Key',
               type=str,
               required=False)
+@click.option('--timeout',
+              help='Global request timeout',
+              type=int,
+              default=60,
+              required=False)
 @click.version_option(version=__version__)
-def cli(settingsfile, url, org, account, key, backupdir, loglevel, debug):
+def cli(settingsfile, url, org, account, key, backupdir, loglevel, debug, timeout):
     if debug:
         numeric_log_level = logging.DEBUG or loglevel.upper() == 'DEBUG'
         format_string = '%(asctime)s %(levelname)-9s %(name)22s %(funcName)22s:%(lineno)-4d %(message)s'
@@ -79,7 +84,8 @@ def cli(settingsfile, url, org, account, key, backupdir, loglevel, debug):
         'org': org,
         'account': account,
         'key': key,
-        'backupdir': backupdir
+        'backupdir': backupdir,
+        'timeout': timeout
     }
     for arg, value in args.iteritems():
         if value:
@@ -97,14 +103,16 @@ def status():
     org = context.settings['org']
     account = context.settings['account']
     key = context.settings['key']
+    timeout = context.settings['timeout']
 
     click.echo('URL: %s' % url)
     click.echo('Organization: %s' % org)
     click.echo('Account: %s' % account)
     click.echo('URI: %s/orgs/%s/accounts ' % (url, org))
     click.echo('Key: %s' % key)
+    click.echo('Timeout: %s' % timeout)
 
-    resp = requests.get(url + '/orgs/' + org + '/accounts/' + account, headers={'Authorization': "Bearer " + key}).status_code
+    resp = requests.get(url + '/orgs/' + org + '/accounts/' + account, headers={'Authorization': "Bearer " + key}, timeout=timeout).status_code
     if resp == 200:
         click.echo('Authenticated: %s' % click.style('True', fg='green'))
     else:

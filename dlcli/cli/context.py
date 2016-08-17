@@ -8,4 +8,5 @@ settings = {
     'account': None,
     'key': None,
     'backupdir': 'dlbackups',
+    'timeout': 60
 }
