@@ -183,6 +183,7 @@ def restore_account(url='', key='', org='', account='', backupdir='', **kwargs):
     links_dir = os.path.join(backupdir, org, account, 'links')
 
     # restore agents
+
     agent_files = glob.glob(agents_dir + '/*.json')
     for agent_path in agent_files:
         agent_json = json.loads(read_file_content(agent_path))
@@ -199,25 +200,30 @@ def restore_account(url='', key='', org='', account='', backupdir='', **kwargs):
         }
         agents.register_agent(url=url, org=org, account=account, key=key, payload=payload, finger=agent_json['id'])
 
+
     # restore dashboards
-    dashboard_files = glob.glob(dashboards_dir + '/*.yaml')
-    for dashboard_path in dashboard_files:
-        dashboards.import_dashboard(dashboard_path)
+    try:
+        dashboard_files = glob.glob(dashboards_dir + '/*.yaml')
+        for dashboard_path in dashboard_files:
+            dashboards.import_dashboard(file_path=dashboard_path, url=url, key=key, org=org, account=account, backupdir=backupdir)
+
+    except Exception, e:
+        print e
 
     # restore plugins
     plugin_files = glob.glob(plugins_dir + '/*')
     for plugin_path in plugin_files:
-        plugins.import_plugin(plugin_path)
+        plugins.import_plugin(plugin_path=plugin_path, url=url, key=key, org=org, account=account, backupdir=backupdir)
 
     # restore rules
     rule_files = glob.glob(rules_dir + '/*.yaml')
     for rule_path in rule_files:
-        rules.import_rule(rule_path)
+        rules.import_rule(rule_path=rule_path, url=url, key=key, org=org, account=account, backupdir=backupdir)
 
     # restore links
     link_files = glob.glob(links_dir + '/*.json')
     for link_path in link_files:
-        links.import_link(link_path)
+        links.import_link(link_path=link_path, url=url, key=key, org=org, account=account, backupdir=backupdir)
 
 
 def restore_org(url='', key='', org='', backupdir='', **kwargs):

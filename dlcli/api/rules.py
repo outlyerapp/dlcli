@@ -45,6 +45,7 @@ def delete_rule(url='', org='', account='', key='', rule='', timeout=60, **kwarg
 def import_rule(url='', org='', account='', key='', rule_path='', timeout=60, **kwargs):
     rule_name = os.path.splitext(os.path.basename(rule_path))[0]
     rule_content = utils.read_file_content(rule_path)
+    print "restoring rule %s" % rule_name
     requests.post(
         utils.build_api_url(url,
                             org,

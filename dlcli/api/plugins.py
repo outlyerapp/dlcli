@@ -35,7 +35,7 @@ def import_plugin(url='', org='', account='', key='', plugin_path='', timeout=60
         "extension": plugin_extension.replace('.', ''),
         "content": base64.b64encode(plugin_content)
     }
-
+    print "restoring plugin %s" % plugin_name
     resp = requests.post(
         utils.build_api_url(url,
                             org,

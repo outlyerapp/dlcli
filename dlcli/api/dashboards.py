@@ -27,6 +27,7 @@ def export_dashboard(url='', org='', account='', key='', dashboard='', timeout=6
 def import_dashboard(url='', org='', account='', key='', file_path='', timeout=60, **kwargs):
     dashboard_name = os.path.splitext(os.path.basename(file_path))[0]
     dashboard_yaml = utils.read_file_content(file_path)
+    print "restoring dashboard %s" % dashboard_name
     return requests.put(
         utils.build_api_url(url,
                             org,
