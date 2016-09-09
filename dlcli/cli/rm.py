@@ -2,6 +2,7 @@ from ..cli import *
 import click
 import sys
 import logging
+import json
 
 from tqdm import tqdm
 from functools import partial
@@ -253,12 +254,19 @@ def _expire_metric_path(period_seconds, resolution_seconds, tag, m):
 @click.option('--resolution', help='number of hours distance between points', type=int, default=1)
 @click.option('--tag', help='name of the tag where metric paths should be cleaned up', type=str, default="all")
 @click.option('--threads', help='number of threads to start', type=int, default=1)
-def metrics(period, resolution, tag, threads):
+@click.option('--metricsfile', help='read the metrics list from a file', type=str, default=None)
+def metrics(period, resolution, tag, threads, metricsfile):
     try:
         pool = Pool(processes=threads)
         period_seconds = period * 3600
         resolution_seconds = resolution * 3600
-        m = metrics_api.get_tag_metrics(tag_name=tag, **context.settings)
+
+        if metricsfile:
+            with open(metricsfile) as fp:
+                m = json.loads(fp.read().replace('][', ','))
+        else:
+            m = metrics_api.get_tag_metrics(tag_name=tag, **context.settings)
+
         click.echo(click.style('Found: %s metrics', fg='green') % (len(m)))
 
         expire = partial(_expire_metric_path, period_seconds, resolution_seconds, tag)
