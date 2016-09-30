@@ -33,7 +33,7 @@ def import_dashboard(url='', org='', account='', key='', file_path='', timeout=6
                             org,
                             account,
                             endpoint='dashboards') + '/' + dashboard_name,
-        headers={'Authorization': "Bearer " + key, "Content-Type": "application/yaml"},
+        headers={'Authorization': "Bearer " + key, "Content-Type": "application/yaml", "Accept-Encoding": "identity"},
         data=dashboard_yaml, timeout=timeout)
 
 
