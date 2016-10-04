@@ -104,13 +104,23 @@ def orgs():
         sys.exit(1)
 
 @click.command(short_help="Get rules")
-def rules():
+@click.option('--status', help='Get rule status', is_flag=True)
+def rules(status):
     try:
-        for r in rules_api.get_rules(**context.settings):
-            print r['name']
+        if status:
+            for r in rules_api.get_rules(**context.settings):
+                print r['name'], 'mute:', r['mute']
+        else:
+            for r in rules_api.get_rules(**context.settings):
+                print r['name']
     except Exception, e:
         print 'Get rules failed. %s' % e
         sys.exit(1)
+
+@click.command(short_help="Get rule")
+@click.argument('name')
+def rule(name):
+    print rules_api.get_rule(rule=name, **context.settings)
 
 @click.command(short_help="Get criterias")
 def criterias():
@@ -373,6 +383,7 @@ get.add_command(packs)
 get.add_command(plugins)
 get.add_command(criterias)
 get.add_command(rules)
+get.add_command(rule)
 get.add_command(alerts)
 get.add_command(tags)
 get.add_command(template)

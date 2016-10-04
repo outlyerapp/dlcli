@@ -15,6 +15,15 @@ def get_rules(url='', org='', account='', key='', timeout=60, **kwargs):
         headers={'Authorization': "Bearer " + key}, timeout=timeout).json()
 
 
+def get_rule(url='', org='', account='', key='', rule='', timeout=60, **kwargs):
+    return requests.get(
+        utils.build_api_url(url,
+                            org,
+                            account,
+                            endpoint='rules') + '/' + rule,
+        headers={'Authorization': "Bearer " + key}, timeout=timeout).json()
+
+
 def get_criteria(url='', org='', account='', key='', rule='', timeout=60, **kwargs):
     return requests.get(
         utils.build_api_url(url,
@@ -60,3 +69,23 @@ def import_rule(url='', org='', account='', key='', rule_path='', timeout=60, **
                             endpoint='rules' + '/' + rule_name),
         headers={'Authorization': "Bearer " + key, "Content-Type": "application/yaml"},
         data=rule_content, timeout=timeout)
+
+
+def pause_rule(url='', org='', account='', key='', rule='', timeout=60, **kwargs):
+    print "pausing rule %s" % rule
+    return requests.put(
+        utils.build_api_url(url,
+                            org,
+                            account,
+                            endpoint='rules' + '/' + rule),
+        headers={'Authorization': "Bearer " + key}, data={'mute': True}, timeout=timeout)
+
+
+def unpause_rule(url='', org='', account='', key='', rule='', timeout=60, **kwargs):
+    print "unpausing rule %s" % rule
+    return requests.put(
+        utils.build_api_url(url,
+                            org,
+                            account,
+                            endpoint='rules' + '/' + rule),
+        headers={'Authorization': "Bearer " + key}, data={'mute': False}, timeout=timeout)
