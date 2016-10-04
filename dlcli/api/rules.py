@@ -73,7 +73,7 @@ def import_rule(url='', org='', account='', key='', rule_path='', timeout=60, **
 
 def mute_rule(url='', org='', account='', key='', rule='', timeout=60, **kwargs):
     print "muting rule %s" % rule
-    return requests.put(
+    return requests.patch(
         utils.build_api_url(url,
                             org,
                             account,
@@ -83,7 +83,7 @@ def mute_rule(url='', org='', account='', key='', rule='', timeout=60, **kwargs)
 
 def unmute_rule(url='', org='', account='', key='', rule='', timeout=60, **kwargs):
     print "unmuting rule %s" % rule
-    return requests.put(
+    return requests.patch(
         utils.build_api_url(url,
                             org,
                             account,
