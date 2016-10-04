@@ -71,8 +71,8 @@ def import_rule(url='', org='', account='', key='', rule_path='', timeout=60, **
         data=rule_content, timeout=timeout)
 
 
-def pause_rule(url='', org='', account='', key='', rule='', timeout=60, **kwargs):
-    print "pausing rule %s" % rule
+def mute_rule(url='', org='', account='', key='', rule='', timeout=60, **kwargs):
+    print "muting rule %s" % rule
     return requests.put(
         utils.build_api_url(url,
                             org,
@@ -81,8 +81,8 @@ def pause_rule(url='', org='', account='', key='', rule='', timeout=60, **kwargs
         headers={'Authorization': "Bearer " + key}, data={'mute': True}, timeout=timeout)
 
 
-def unpause_rule(url='', org='', account='', key='', rule='', timeout=60, **kwargs):
-    print "unpausing rule %s" % rule
+def unmute_rule(url='', org='', account='', key='', rule='', timeout=60, **kwargs):
+    print "unmuting rule %s" % rule
     return requests.put(
         utils.build_api_url(url,
                             org,

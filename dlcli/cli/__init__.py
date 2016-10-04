@@ -1,8 +1,8 @@
 from .cli import *  # this import needs to be first!
 from .backup import *
 from .install import *
-from .pause import *
-from .unpause import *
+from .mute import *
+from .unmute import *
 from .pull import *
 from .push import *
 from .restore import *
