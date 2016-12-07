@@ -16,3 +16,5 @@ index.html
 docs/asciidoc/html_docs
 wheelhouse
 dlbackups/
+.conf/
+.templates/

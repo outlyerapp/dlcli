@@ -100,12 +100,17 @@ def template(name, path, yes):
 
         # upload plugins
         for p in os.listdir(os.path.join(path, 'plugins')):
+
             if p.endswith(".py"):
-                resp = templates_api.put_plugin(path=os.path.join(path, 'plugins', p), template=name, **context.settings)
-                if resp.status_code == 200:
-                    click.echo('Uploaded plugin ' + p)
-                else:
-                    click.echo('Error uploading plugin ' + p + '. Status Code: ' + click.style(str(resp.status_code), fg='red'))
+                plugin_type = "INPROCESS"
+            else:
+                plugin_type = "SCRIPT"
+
+            resp = templates_api.put_plugin(path=os.path.join(path, 'plugins', p), template=name, type=plugin_type, **context.settings)
+            if resp.status_code == 200:
+                click.echo('Uploaded plugin ' + p)
+            else:
+                click.echo('Error uploading plugin ' + p + '. Status Code: ' + click.style(str(resp.status_code), fg='red'))
 
         # upload dashboards
         for p in os.listdir(os.path.join(path, 'dashboards')):

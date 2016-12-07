@@ -66,14 +66,15 @@ def put_manifest(url='', org='', account='', key='', name='', path='', timeout=6
         data=json.dumps(content), timeout=timeout)
 
 
-def put_plugin(url='', org='', account='', key='', path='', template='', timeout=60, **kwargs):
+def put_plugin(url='', org='', account='', key='', path='', template='', timeout=60, type='INPROCESS', **kwargs):
     plugin_name = os.path.splitext(os.path.basename(path))[0]
     plugin_extension = os.path.splitext(os.path.basename(path))[1]
     plugin_content = utils.read_file_content(path)
     payload = {
         "name": plugin_name,
         "extension": plugin_extension.replace('.', ''),
-        "content": base64.b64encode(plugin_content)
+        "content": base64.b64encode(plugin_content),
+        "type": type
     }
     resp = requests.post(
         utils.build_api_url(url,
