@@ -48,7 +48,7 @@ def ping_agent(url='', org='', account='', key='', payload='', finger='', timeou
 
 
 def delete_agent(url='', org='', account='', key='', agent_name='', timeout=60, **kwargs):
-    agent_map = get_agents(url, key, org, account)
+    agent_map = get_agents(url, org, account, key)
     for agent in agent_map:
         if agent['name'] == agent_name:
             return requests.delete(
