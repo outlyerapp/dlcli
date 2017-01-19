@@ -53,7 +53,7 @@ def account(account, yes):
 @click.argument('agent')
 def agent(agent):
     try:
-        resp = agents_api.delete_agent(agent=agent, **context.settings)
+        resp = agents_api.delete_agent(agent_name=agent, **context.settings)
         if resp.status_code == 204:
             click.echo('Deleted agent ' + agent)
         else:
