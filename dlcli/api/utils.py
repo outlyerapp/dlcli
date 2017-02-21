@@ -12,6 +12,7 @@ import links
 import orgs
 import click
 import errno
+import urllib
 from terminaltables import SingleTable
 from termcolor import colored
 
@@ -113,7 +114,8 @@ def backup_account(url='', org='', key='', account='', backupdir='', **kwargs):
     # backup agents
     agent_dir = create_dir(account_dir, 'agents')
     for agent_json in agents.get_agents(url=url, org=org, account=account, key=key):
-        agent_path = os.path.join(agent_dir, str(agent_json['name']) + '.json')
+        # some agents can have a name 'http://...' encode name before writing a dir
+        agent_path = os.path.join(agent_dir, str(urllib.quote(agent_json['name'], safe='')) + '.json')
         remove_keys = ['presence_state', 'created', 'modified', 'heartbeat']
         for k in remove_keys:
             if k in agent_json:
