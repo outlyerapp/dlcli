@@ -74,14 +74,14 @@ def print_run_table(table_data):
     print table.table
 
 
-def save_setting(setting='', value='', settingsfile=''):
+def save_setting(setting='', value='', settings_file=''):
     try:
-        stream = open(settingsfile, 'r')
+        stream = open(settings_file, 'r')
         data = yaml.load(stream)
     except IOError:
         data = {}
     data[setting] = value
-    with open(settingsfile, 'w') as yaml_file:
+    with open(settings_file, 'w') as yaml_file:
         yaml_file.write(yaml.safe_dump(data, default_flow_style=False, explicit_start=True))
 
 
@@ -89,13 +89,14 @@ def build_api_url(url,
                   org,
                   account,
                   endpoint='',
-                  orglevel=False,
-                  accountlevel=False):
-    if orglevel:
+                  org_level=False,
+                  account_level=False):
+    if org_level:
         return url + '/orgs'
-    if accountlevel:
+    elif account_level:
         return url + '/orgs/' + org + '/accounts'
-    return url + '/orgs/' + org + '/accounts/' + account + '/' + endpoint
+    else:
+        return url + '/orgs/' + org + '/accounts/' + account + '/' + endpoint
 
 
 def create_dir(path, directory):
@@ -105,66 +106,80 @@ def create_dir(path, directory):
     return new_directory
 
 
-def backup_account(url='', org='', key='', account='', backupdir='', **kwargs):
+# noinspection PyUnusedLocal
+def backup_account(url='', org='', key='', account='', backup_dir='', **kwargs):
     #  create directory structure
-    backup_dir = create_dir(os.getcwd(), backupdir)
+    backup_dir = create_dir(os.getcwd(), backup_dir)
     org_dir = create_dir(backup_dir, org)
     account_dir = create_dir(org_dir, account)
 
     # backup agents
     agent_dir = create_dir(account_dir, 'agents')
-    for agent_json in agents.get_agents(url=url, org=org, account=account, key=key):
+    for agent in agents.get_agents(url=url, org=org, account=account, key=key):
+        logging.debug('Exporting JSON for agent "%s"', agent['name'])
         # some agents can have a name 'http://...' encode name before writing a dir
-        agent_path = os.path.join(agent_dir, str(urllib.quote(agent_json['name'], safe='')) + '.json')
+        agent_path = os.path.join(agent_dir, str(urllib.quote(agent['name'], safe='')) + '.json')
         remove_keys = ['presence_state', 'created', 'modified', 'heartbeat']
         for k in remove_keys:
-            if k in agent_json:
-                del agent_json[k]
+            if k in agent:
+                del agent[k]
         with open(agent_path, 'w') as f:
-            f.write(json.dumps(agent_json, indent=4))
+            f.write(json.dumps(agent, indent=4))
 
     # backup dashboards
     dashboard_dir = create_dir(account_dir, 'dashboards')
-    for d in dashboards.get_dashboards(url=url, org=org, account=account, key=key):
-        dashboard_path = os.path.join(dashboard_dir, str(d['name']) + '.yaml')
+    for dash in dashboards.get_dashboards(url=url, org=org, account=account, key=key):
+        logging.debug('Exporting YAML for dashboard "%s"', dash['name'])
+        dashboard_path = os.path.join(dashboard_dir, str(dash['name']) + '.yaml')
         with open(dashboard_path, 'w') as f:
-            f.write(yaml.safe_dump(d, default_flow_style=False, explicit_start=True))
+            f.write(yaml.safe_dump(dash, default_flow_style=False, explicit_start=True))
 
     # backup plugins
     plugin_dir = create_dir(account_dir, 'plugins')
-    for p in plugins.get_plugins(url=url, org=org, account=account, key=key):
-        plugin_path = os.path.join(plugin_dir, str(p['name']) + '.' + str(p['extension']))
+    for plugin in plugins.get_plugins(url=url, org=org, account=account, key=key):
+        logging.debug('Exporting plugin "%s"', plugin['name'])
+        plugin_path = os.path.join(plugin_dir, str(plugin['name']) + '.' + str(plugin['extension']))
         with open(plugin_path, 'w') as f:
-            f.write(plugins.export_plugin(plugin=p['name'], url=url, org=org, account=account, key=key))
+            f.write(plugins.export_plugin(plugin=plugin['name'], url=url, org=org, account=account, key=key))
 
 
     # backup rules
     rule_dir = create_dir(account_dir, 'rules')
-    for r in rules.get_rules(url=url, org=org, account=account, key=key):
-        rule_path = os.path.join(rule_dir, str(r['name']) + '.yaml')
+    for rule in rules.get_rules(url=url, org=org, account=account, key=key):
+        logging.debug('Exporting YAML for rule "%s" with id %s', rule['name'], rule['id'])
+        rule_path = os.path.join(rule_dir, str(rule['name']) + '.yaml')
         with open(rule_path, 'w') as f:
-            rule_content = yaml.safe_load(rules.export_rule(rule=r['id'], url=url, org=org, account=account, key=key))
-            if rule_content['actions']:
-                action_count = len(rule_content['actions'])
-                for i in range(action_count):
-                    try:
-                        del rule_content['actions'][i]['details']['status']
-                    except KeyError:
-                        continue
-            f.write(yaml.safe_dump(rule_content, default_flow_style=False, explicit_start=True))
+            rule_yaml = rules.export_rule(rule=rule['id'], url=url, org=org, account=account, key=key)
+            try:
+                rule_content = yaml.safe_load(rule_yaml)
+                if rule_content['actions']:
+                    action_count = len(rule_content['actions'])
+                    for i in range(action_count):
+                        try:
+                            del rule_content['actions'][i]['details']['status']
+                        except KeyError:
+                            continue
+                f.write(yaml.safe_dump(rule_content, default_flow_style=False, explicit_start=True))
+            except yaml.YAMLError as e:
+                logging.warn('Unable to parse YAML for rule %s: %s', rule['name'], e.problem)
+                f.write(rule_yaml)
 
     # backup links
     link_dir = create_dir(account_dir, 'links')
-    for l in links.get_links(url=url, org=org, account=account, key=key):
-        link_path = os.path.join(link_dir, l['id'] + '.json')
-        link_json = links.export_link(link_id=l['id'], url=url, org=org, account=account, key=key)
+    for link in links.get_links(url=url, org=org, account=account, key=key):
+        logging.debug('Exporting JSON for pack "%s" with id %s', link['plugin'], link['id'])
+        link_path = os.path.join(link_dir, link['id'] + '.json')
+        link_json = links.export_link(link_id=link['id'], url=url, org=org, account=account, key=key)
         with open(link_path, 'w') as f:
             f.write(json.dumps(link_json, indent=4))
 
 
-def backup_org(url='', org='', key='', backupdir='', **kwargs):
+# noinspection PyUnusedLocal
+def backup_org(url='', org='', key='', backup_dir='', **kwargs):
+    click.echo(click.style('Backing up accounts in %s...' % org, 'white', bold=True))
     for a in accounts.get_accounts(url=url, org=org, key=key):
-        backup_account(url=url, key=key, org=org, account=a['name'], backupdir=backupdir)
+        click.echo(click.style(' * Backing up account: ', 'white', bold=True) + click.style(a['name'], 'green'))
+        backup_account(url=url, key=key, org=org, account=a['name'], backup_dir=backup_dir)
 
 
 def read_file_content(file_path):
@@ -176,13 +191,14 @@ def read_file_content(file_path):
             raise
 
 
-def restore_account(url='', key='', org='', account='', backupdir='', **kwargs):
+# noinspection PyUnusedLocal
+def restore_account(url='', key='', org='', account='', backup_dir='', **kwargs):
 
-    agents_dir = os.path.join(backupdir, org, account, 'agents')
-    dashboards_dir = os.path.join(backupdir, org, account, 'dashboards')
-    plugins_dir = os.path.join(backupdir, org, account, 'plugins')
-    rules_dir = os.path.join(backupdir, org, account, 'rules')
-    links_dir = os.path.join(backupdir, org, account, 'links')
+    agents_dir = os.path.join(backup_dir, org, account, 'agents')
+    dashboards_dir = os.path.join(backup_dir, org, account, 'dashboards')
+    plugins_dir = os.path.join(backup_dir, org, account, 'plugins')
+    rules_dir = os.path.join(backup_dir, org, account, 'rules')
+    links_dir = os.path.join(backup_dir, org, account, 'links')
 
     # restore agents
 
@@ -207,7 +223,8 @@ def restore_account(url='', key='', org='', account='', backupdir='', **kwargs):
     try:
         dashboard_files = glob.glob(dashboards_dir + '/*.yaml')
         for dashboard_path in dashboard_files:
-            dashboards.import_dashboard(file_path=dashboard_path, url=url, key=key, org=org, account=account, backupdir=backupdir)
+            dashboards.import_dashboard(file_path=dashboard_path, url=url, key=key,
+                                        org=org, account=account, backup_dir=backup_dir)
 
     except Exception, e:
         print e
@@ -215,22 +232,26 @@ def restore_account(url='', key='', org='', account='', backupdir='', **kwargs):
     # restore plugins
     plugin_files = glob.glob(plugins_dir + '/*')
     for plugin_path in plugin_files:
-        plugins.import_plugin(plugin_path=plugin_path, url=url, key=key, org=org, account=account, backupdir=backupdir)
+        plugins.import_plugin(plugin_path=plugin_path, url=url, key=key,
+                              org=org, account=account, backup_dir=backup_dir)
 
     # restore rules
     rule_files = glob.glob(rules_dir + '/*.yaml')
     for rule_path in rule_files:
-        rules.import_rule(rule_path=rule_path, url=url, key=key, org=org, account=account, backupdir=backupdir)
+        rules.import_rule(rule_path=rule_path, url=url, key=key,
+                          org=org, account=account, backup_dir=backup_dir)
 
     # restore links
     link_files = glob.glob(links_dir + '/*.json')
     for link_path in link_files:
-        links.import_link(link_path=link_path, url=url, key=key, org=org, account=account, backupdir=backupdir)
+        links.import_link(link_path=link_path, url=url, key=key,
+                          org=org, account=account, backup_dir=backup_dir)
 
 
-def restore_org(url='', key='', org='', backupdir='', **kwargs):
+# noinspection PyUnusedLocal
+def restore_org(url='', key='', org='', backup_dir='', **kwargs):
     for a in accounts.get_accounts():
-        restore_account(url, key, org, a['name'], backupdir)
+        restore_account(url, key, org, a['name'], backup_dir)
 
 
 def agent_status_check(agent, status):
@@ -247,6 +268,7 @@ def agent_status_check(agent, status):
             click.echo(click.style(agent['name'], fg='red'))
 
 
+# noinspection PyUnusedLocal
 def search_agent(url='', key='', org='', account='', agent='', **kwargs):
     org_list = orgs.get_orgs(url=url, org=org, account=account, key=key)
     for o in org_list:
@@ -255,9 +277,10 @@ def search_agent(url='', key='', org='', account='', agent='', **kwargs):
             agent_list = agents.get_agents(url=url, org=org, account=acc['name'], key=key)
             for ag in agent_list:
                 if ag['name'] == agent:
-                    click.echo('Organization: ' + o['name'] + ' Account: ' + acc['name'] + ' Agent: ' + ag['name'])
+                    click.echo('Organization: %s Account: %s Agent: %s' % (o['name'], acc['name'], ag['name']))
 
 
+# noinspection PyUnusedLocal
 def search_fingerprint(url='', key='', org='', account='', fingerprint='', **kwargs):
     org_list = orgs.get_orgs(url=url, org=org, account=account, key=key)
     for o in org_list:
@@ -266,9 +289,10 @@ def search_fingerprint(url='', key='', org='', account='', fingerprint='', **kwa
             agent_list = agents.get_agents(url=url, org=org, account=acc['name'], key=key)
             for ag in agent_list:
                 if ag['id'] == fingerprint:
-                    click.echo('Organization: ' + o['name'] + ' Account: ' + acc['name'] + ' Agent: ' + ag['name'])
+                    click.echo('Organization: %s Account: %s Agent: %s' % (o['name'], acc['name'], ag['name']))
 
 
+# noinspection PyUnusedLocal
 def search_metadata(url='', key='', org='', account='', metadata='', **kwargs):
     agent_names = []
     org_list = orgs.get_orgs(url=url, org=org, account=account, key=key)
@@ -280,9 +304,10 @@ def search_metadata(url='', key='', org='', account='', metadata='', **kwargs):
                 agent_names.append(summary['name'])
             for agent in agent_names:
                 try:
-                    search_hash = flatten(agents.get_agent(url=url, org=org, account=acc['name'], key=key, agent_name=agent))
+                    search_hash = flatten(agents.get_agent(url=url, org=org, account=acc['name'],
+                                                           key=key, agent_name=agent))
                     if metadata in search_hash.keys() or metadata in search_hash.values():
-                        click.echo('Organization: ' + o['name'] + ' Account: ' + acc['name'] + ' Agent: ' + agent)
+                        click.echo('Organization: %s Account: %s Agent: %s' % (o['name'], acc['name'], agent))
                 except:
                     continue
 
@@ -301,10 +326,10 @@ def create_node(f, times=None):
 
 
 def create_tree(h, c):
-    for dir, files in c.iteritems():
-        parent = os.path.join(h, dir)
+    for path, files in c.iteritems():
+        parent = os.path.join(h, path)
         make_node(parent)
-        children = c[dir]
+        children = c[path]
         for child in children:
             child = os.path.join(parent, child)
             create_node(child)

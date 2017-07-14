@@ -4,12 +4,14 @@ from ..api import *
 from .. import __version__
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 try:
     from logging import NullHandler
 except ImportError:
     from logging import Handler
+
 
     class NullHandler(Handler):
         def emit(self, record):
@@ -25,11 +27,11 @@ except ImportError:
               help='Log level',
               type=str,
               default='info')
-@click.option('--settingsfile',
+@click.option('--settings-file',
               help='Settings File',
               type=str,
-              default=context.settings['settingsfile'])
-@click.option('--backupdir',
+              default=context.settings['settings_file'])
+@click.option('--backup-dir',
               help='Backups Directory',
               type=str,
               required=False)
@@ -52,7 +54,7 @@ except ImportError:
               default=60,
               required=False)
 @click.version_option(version=__version__)
-def cli(settingsfile, url, org, account, key, backupdir, loglevel, debug, timeout):
+def cli(settings_file, url, org, account, key, backup_dir, loglevel, debug, timeout):
     if debug:
         numeric_log_level = logging.DEBUG or loglevel.upper() == 'DEBUG'
         format_string = '%(asctime)s %(levelname)-9s %(name)22s %(funcName)22s:%(lineno)-4d %(message)s'
@@ -66,12 +68,13 @@ def cli(settingsfile, url, org, account, key, backupdir, loglevel, debug, timeou
     handler.setFormatter(logging.Formatter(format_string))
     logging.root.addHandler(handler)
     logging.root.setLevel(numeric_log_level)
-    logger = logging.getLogger('dlcli.cli')
-    logging.getLogger("requests").setLevel(logging.WARNING)
+
+    if not debug:
+        logging.getLogger("requests").setLevel(logging.WARN)
 
     try:
         # load some settings from file over the top of the defaults
-        stream = open(settingsfile, 'r')
+        stream = open(settings_file, 'r')
         file_settings = yaml.load(stream)
         context.settings.update({k: v for k, v in file_settings.iteritems() if v})
     except IOError:
@@ -79,12 +82,12 @@ def cli(settingsfile, url, org, account, key, backupdir, loglevel, debug, timeou
 
     # command line options override defaults and settings file
     args = {
-        'settingsfile': settingsfile,
+        'settings_file': settings_file,
         'url': url,
         'org': org,
         'account': account,
         'key': key,
-        'backupdir': backupdir,
+        'backup_dir': backup_dir,
         'timeout': timeout
     }
     for arg, value in args.iteritems():
@@ -98,7 +101,6 @@ def cli(settingsfile, url, org, account, key, backupdir, loglevel, debug, timeou
 
 @click.command(short_help="status")
 def status():
-
     url = context.settings['url']
     org = context.settings['org']
     account = context.settings['account']
@@ -110,13 +112,15 @@ def status():
     click.echo('Account: %s' % account)
     click.echo('URI: %s/orgs/%s/accounts ' % (url, org))
     click.echo('Key: %s' % key)
-    click.echo('Timeout: %s' % timeout)
 
-    resp = requests.get(url + '/orgs/' + org + '/accounts/' + account, headers={'Authorization': "Bearer " + key}, timeout=timeout).status_code
+    resp = requests.get(url + '/orgs/' + org + '/accounts/' + account,
+                        headers={'Authorization': "Bearer " + key},
+                        timeout=timeout).status_code
     if resp == 200:
         click.echo('Authenticated: %s' % click.style('True', fg='green'))
     else:
-        click.echo('Authenticated: %s, Status Code: %s' % (click.style('False', fg='red'), click.style(str(resp), fg='red')))
+        click.echo(
+            'Authenticated: %s, Status Code: %s' % (click.style('False', fg='red'), click.style(str(resp), fg='red')))
 
 
 cli.add_command(status)

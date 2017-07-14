@@ -38,7 +38,7 @@ def org(org):
 def metrics():
     try:
         resp = series.update_tag_metrics(tag="all", status='valid', **context.settings)
-        click.echo(click.style('Recovered: %s paths', fg='green') % (resp))
+        click.echo(click.style('Recovered: %s paths', fg='green') % resp)
     except Exception, e:
         print 'Cleanup metrics failed. %s' % e
         sys.exit(1)

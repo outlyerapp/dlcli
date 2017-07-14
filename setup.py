@@ -12,16 +12,15 @@ def fread(fname):
 
 
 def get_version():
-    VERSIONFILE = "dlcli/_version.py"
-    verstrline = fread(VERSIONFILE).strip()
-    vsre = r"^__version__ = ['\"]([^'\"]*)['\"]"
-    mo = re.search(vsre, verstrline, re.M)
+    version_path = "dlcli/_version.py"
+    version_line = fread(version_path).strip()
+    regex_pattern = r"^__version__ = ['\"]([^'\"]*)['\"]"
+    mo = re.search(regex_pattern, version_line, re.M)
     if mo:
-        VERSION = mo.group(1)
+        version = mo.group(1)
     else:
-        raise RuntimeError("Unable to find version string in %s." %
-                           (VERSIONFILE, ))
-    return VERSION
+        raise RuntimeError("Unable to find version string in %s." % version_path)
+    return version
 
 
 dependencies = ['click', 'requests', 'pyyaml', 'terminaltables', 'termcolor', 'pysparklines', 'tqdm']
@@ -29,12 +28,12 @@ dependencies = ['click', 'requests', 'pyyaml', 'terminaltables', 'termcolor', 'p
 setup(
     name='dlcli',
     version=get_version(),
-    url='https://github.com/sacreman/dlcli',
+    url='https://github.com/dataloop/dlcli',
     download_url="https://github.com/dataloop/dlcli/tarball/v" + get_version(),
     license="Apache License, Version 2.0",
-    author='Steven Acreman',
-    author_email='steven.acreman@dataloop.io',
-    description='Command line utility for Dataloop.IO',
+    author='Todd Radel',
+    author_email='todd.radel@outlyer.com',
+    description='Command line utility for Outlyer',
     long_description=fread('README.rst'),
     keywords="dataloop monitoring",
     packages=find_packages(exclude=['tests']),

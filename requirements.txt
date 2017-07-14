@@ -1,7 +1,7 @@
-click==6.6
-requests==2.10.0
-PyYAML==3.11
-terminaltables==3.0.0
-termcolor==1.1.0
-pysparklines==0.9
-tqdm==4.8.2
+click>=6.6
+requests>=2.10.0
+PyYAML>=3.11
+terminaltables>=3.0.0
+termcolor>=1.1.0
+pysparklines>=0.9
+tqdm>=4.8.2

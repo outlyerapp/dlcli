@@ -246,7 +246,7 @@ def _expire_metric_path(period_seconds, resolution_seconds, tag, m):
                                                      metric=m['name'],
                                                      status='expired',
                                                      **context.settings)
-    except (KeyboardInterrupt, ValueError, ConnectionError), e:
+    except (KeyboardInterrupt, ValueError, ConnectionError):
         return None
 
 @click.command(short_help="rm metric paths")
@@ -272,7 +272,7 @@ def metrics(period, resolution, tag, threads, metricsfile):
         expire = partial(_expire_metric_path, period_seconds, resolution_seconds, tag)
         expired_paths = tqdm(pool.imap_unordered(expire, m))
         expired_paths = sum(filter(None, expired_paths))
-        click.echo(click.style('Expired: %s metric paths', fg='green') % (expired_paths))
+        click.echo(click.style('Expired: %s metric paths', fg='green') % expired_paths)
 
     except Exception, e:
         print 'Cleanup metrics failed. %s' % e

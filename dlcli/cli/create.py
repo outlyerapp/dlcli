@@ -24,6 +24,7 @@ def token(name):
         print 'Create token failed. %s' % e
         sys.exit(1)
 
+
 @click.command(short_help="Create pack")
 @click.argument('name')
 def pack(name):
@@ -58,11 +59,13 @@ def pack(name):
         print 'Create pack failed. %s' % e
         sys.exit(1)
 
+
 @click.command(short_help="Create template")
 @click.argument('name')
 def template(name):
     try:
-        print yaml.safe_dump(templates_api.create_template(name=name, **context.settings), default_flow_style=False, explicit_start=True)
+        print yaml.safe_dump(templates_api.create_template(name=name, **context.settings),
+                             default_flow_style=False, explicit_start=True)
     except Exception, e:
         print 'Create template failed. %s' % e
         sys.exit(1)

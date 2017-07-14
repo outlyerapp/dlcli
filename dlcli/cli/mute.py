@@ -1,13 +1,11 @@
 from ..cli import *
-from ..api import *
-import sys
 import click
 import logging
+from ..api import rules as rules_api
 
 
 logger = logging.getLogger(__name__)
 
-from ..api import rules as rules_api
 
 @cli.group('mute')
 def mute():

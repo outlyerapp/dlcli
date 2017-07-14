@@ -1,7 +1,7 @@
 .. _readme:
 
 `Quick Example`_
-----------------------------
+----------------
 
 install dlcli using pip
 
@@ -17,7 +17,7 @@ set your org, account and api key by creating ~/dlcli.yaml
     account: account_name
     key: key_from_account_settings
     org: orgname
-    url: https://api.dataloop.io/v1
+    url: https://api.outlyer.com/v1
 
 Or you can update the file interactively.
 
@@ -52,7 +52,7 @@ fun! this is a work in progress so if you want to collaborate please raise PR's
 
 
 `Dataloop CLI Tool`_
-----------------------------
+--------------------
 
 dlcli commands can be thought of as a series of nested commands, with each stage having its own options and flags.
 
@@ -110,7 +110,7 @@ The top-level help output looks like this:
 Note that all available flags and commands for this level are shown. This pattern is repeated at each successive level of ``--help``
 
 `Using the API outside of dlcli`_
-----------------------------
+---------------------------------
 
 You can use the API code outside of the command line utility.
 
@@ -119,7 +119,7 @@ You can use the API code outside of the command line utility.
     from dlcli import api
     
     settings = {
-        'url': 'https://app.dataloop.io/api/v1',
+        'url': 'https://api.outlyer.com/v1',
         'org': 'org_name',
         'account': 'account_name',
         'key': 'api_key',
