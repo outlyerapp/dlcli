@@ -2,7 +2,15 @@
 CHANGELOG
 =========
 
-0.7.1 - 14 July 2017
+0.7.1 - 17 July 2017
+--------------------
+
+- Reverted command line arguments ``--backup-dir`` and ``--settings-file`` to
+  ``backupdir`` and ``settingsfile``.
+- Fixed bug in ``wrapper.delete()`` method that was causing an error message
+  "delete() takes exactly 2 arguments (5 given)".
+
+0.7.0 - 14 July 2017
 --------------------
 
 - Changed "Dataloop" references to "Outlyer".
