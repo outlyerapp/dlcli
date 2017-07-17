@@ -27,11 +27,11 @@ except ImportError:
               help='Log level',
               type=str,
               default='info')
-@click.option('--settings-file',
+@click.option('--settingsfile',
               help='Settings File',
               type=str,
-              default=context.settings['settings_file'])
-@click.option('--backup-dir',
+              default=context.settings['settingsfile'])
+@click.option('--backupdir',
               help='Backups Directory',
               type=str,
               required=False)
@@ -54,7 +54,7 @@ except ImportError:
               default=60,
               required=False)
 @click.version_option(version=__version__)
-def cli(settings_file, url, org, account, key, backup_dir, loglevel, debug, timeout):
+def cli(settingsfile, url, org, account, key, backupdir, loglevel, debug, timeout):
     if debug:
         numeric_log_level = logging.DEBUG or loglevel.upper() == 'DEBUG'
         format_string = '%(asctime)s %(levelname)-9s %(name)22s %(funcName)22s:%(lineno)-4d %(message)s'
@@ -74,7 +74,7 @@ def cli(settings_file, url, org, account, key, backup_dir, loglevel, debug, time
 
     try:
         # load some settings from file over the top of the defaults
-        stream = open(settings_file, 'r')
+        stream = open(settingsfile, 'r')
         file_settings = yaml.load(stream)
         context.settings.update({k: v for k, v in file_settings.iteritems() if v})
     except IOError:
@@ -82,12 +82,12 @@ def cli(settings_file, url, org, account, key, backup_dir, loglevel, debug, time
 
     # command line options override defaults and settings file
     args = {
-        'settings_file': settings_file,
+        'settingsfile': settingsfile,
         'url': url,
         'org': org,
         'account': account,
         'key': key,
-        'backup_dir': backup_dir,
+        'backupdir': backupdir,
         'timeout': timeout
     }
     for arg, value in args.iteritems():

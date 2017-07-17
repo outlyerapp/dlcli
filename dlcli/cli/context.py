@@ -15,11 +15,11 @@ for path in settings_path:
 
 global settings
 settings = {
-    'settings_file': settings_file,
+    'settingsfile': settings_file,
     'url': 'https://api.outlyer.com/v1',
     'org': None,
     'account': None,
     'key': None,
-    'backup_dir': 'dlbackups',
+    'backupdir': 'dlbackups',
     'timeout': 60
 }
