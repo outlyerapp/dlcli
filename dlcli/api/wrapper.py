@@ -38,7 +38,7 @@ def patch(url, data=None, **kwargs):
     return r
 
 
-def delete(url, data=None, **kwargs):
-    r = session.delete(url, data, **kwargs)
+def delete(url, **kwargs):
+    r = session.delete(url, **kwargs)
     r.raise_for_status()
     return r
