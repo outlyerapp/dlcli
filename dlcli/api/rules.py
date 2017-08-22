@@ -25,7 +25,7 @@ def get_rule(url='', org='', account='', key='', rule='', timeout=60, **kwargs):
 def get_criteria(url='', org='', account='', key='', rule='', timeout=60, **kwargs):
     return get(utils.build_api_url(url, org, account,
                                    endpoint='rules/%s/criteria' % rule),
-               headers={'Authorization': "Bearer " + key}, timeout=timeout)
+               headers={'Authorization': "Bearer " + key}, timeout=timeout).json()
 
 
 # noinspection PyUnusedLocal
