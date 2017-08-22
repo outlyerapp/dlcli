@@ -16,7 +16,7 @@ def set():
 @click.argument('url')
 def url(url):
     try:
-        save_setting(setting='url', value=url, settings_file=context.settings['settings_file'])
+        save_setting(setting='url', value=url, settings_file=context.settings['settingsfile'])
     except Exception, e:
         print 'Save url failed. %s' % e
         sys.exit(1)
@@ -26,7 +26,7 @@ def url(url):
 @click.argument('org')
 def org(org):
     try:
-        save_setting(setting='org', value=org, settings_file=context.settings['settings_file'])
+        save_setting(setting='org', value=org, settings_file=context.settings['settingsfile'])
     except Exception, e:
         print 'Save org failed. %s' % e
         sys.exit(1)
@@ -36,7 +36,7 @@ def org(org):
 @click.argument('account')
 def account(account):
     try:
-        save_setting(setting='account', value=account, settings_file=context.settings['settings_file'])
+        save_setting(setting='account', value=account, settings_file=context.settings['settingsfile'])
     except Exception, e:
         print 'Save account failed. %s' % e
         sys.exit(1)
@@ -46,7 +46,7 @@ def account(account):
 @click.argument('key')
 def key(key):
     try:
-        save_setting(setting='key', value=key, settings_file=context.settings['settings_file'])
+        save_setting(setting='key', value=key, settings_file=context.settings['settingsfile'])
     except Exception, e:
         print 'Save key failed. %s' % e
         sys.exit(1)
